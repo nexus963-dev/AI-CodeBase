@@ -1,133 +1,112 @@
-<!DOCTYPE html>
-{% load static %}
-<html class="light" lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
+<!DOCTYPE html><html lang="en" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
       tailwind.config = {
         darkMode: "class",
         theme: {
           extend: {
             "colors": {
-                    "primary-fixed-dim": "#b4c5ff",
-                    "surface-tint": "#0053db",
-                    "surface-bright": "#f8f9ff",
-                    "status-success": "#10B981",
-                    "on-primary-fixed": "#00174b",
-                    "inverse-on-surface": "#eaf1ff",
-                    "on-secondary-fixed": "#001a42",
-                    "secondary-fixed": "#d8e2ff",
-                    "inverse-surface": "#27313f",
-                    "outline-variant": "#c3c6d7",
-                    "outline": "#737686",
-                    "text-muted": "#6B7280",
-                    "tertiary-fixed": "#ffdbcd",
-                    "surface-container-low": "#eff4ff",
-                    "on-primary-container": "#eeefff",
-                    "surface-container-lowest": "#ffffff",
-                    "secondary-fixed-dim": "#adc6ff",
-                    "primary": "#004ac6",
-                    "on-secondary-fixed-variant": "#004395",
-                    "surface": "#f8f9ff",
-                    "status-error": "#EF4444",
-                    "tertiary-fixed-dim": "#ffb596",
-                    "secondary": "#0058be",
-                    "background": "#f8f9ff",
-                    "tertiary-container": "#bc4800",
-                    "on-error-container": "#93000a",
-                    "on-tertiary": "#ffffff",
-                    "primary-fixed": "#dbe1ff",
-                    "on-secondary-container": "#fefcff",
-                    "surface-container-high": "#dee9fc",
-                    "secondary-fixed-dim": "#adc6ff",
-                    "surface-dim": "#d0dbed",
-                    "surface-variant": "#d9e3f6",
-                    "text-muted": "#6B7280",
-                    "status-success": "#10B981",
-                    "error-container": "#ffdad6",
-                    "secondary-container": "#2170e4",
-                    "surface-tint": "#0053db",
-                    "on-primary-fixed-variant": "#003ea8",
-                    "tertiary-container": "#bc4800",
-                    "outline": "#737686",
-                    "outline-variant": "#c3c6d7",
-                    "primary-container": "#2563eb",
-                    "inverse-primary": "#b4c5ff",
-                    "status-warning": "#F59E0B",
-                    "primary-fixed-dim": "#b4c5ff",
-                    "text-secondary": "#374151",
-                    "tertiary-fixed-dim": "#ffb596",
-                    "on-background": "#121c2a",
-                    "secondary": "#0058be",
-                    "on-error-container": "#93000a",
-                    "text-primary": "#1F2937",
-                    "on-surface": "#121c2a",
-                    "surface-container-low": "#eff4ff",
-                    "on-secondary-fixed": "#001a42",
-                    "surface-bright": "#f8f9ff",
-                    "error": "#ba1a1a",
-                    "on-error": "#ffffff",
-                    "on-secondary-container": "#fefcff",
-                    "on-secondary-fixed-variant": "#004395",
-                    "on-primary-fixed": "#00174b",
-                    "surface-base": "#F9FAFB",
-                    "background": "#f8f9ff",
-                    "tertiary": "#943700",
-                    "on-tertiary-fixed-variant": "#7d2d00"
-                },
-                "borderRadius": {
-                    "DEFAULT": "0.125rem",
-                    "lg": "0.25rem",
-                    "xl": "0.5rem",
-                    "full": "0.75rem"
-                },
-                "spacing": {
-                    "md": "16px",
-                    "max-content-width": "1440px",
-                    "xs": "4px",
-                    "sm": "12px",
-                    "sidebar-width": "260px",
-                    "lg": "24px",
-                    "base": "8px"
-                },
-                "fontFamily": {
-                    "label-sm": ["Inter"],
-                    "body-lg": ["Inter"],
-                    "body-md": ["Inter"],
-                    "display-lg": ["Inter"],
-                    "headline-lg-mobile": ["Inter"],
-                    "headline-md": ["Inter"],
-                    "headline-sm": ["Inter"],
-                    "body-sm": ["Inter"],
-                    "headline-lg": ["Inter"],
-                    "code-md": ["JetBrains Mono"],
-                    "label-md": ["Inter"]
-                },
-                "fontSize": {
-                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
-                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
-                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                    "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
-                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
-                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
-                    "code-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
-                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
-                }
+                "surface-container-highest": "#d9e3f6",
+                "status-error": "#EF4444",
+                "on-surface-variant": "#434655",
+                "on-tertiary": "#ffffff",
+                "on-primary-container": "#eeefff",
+                "primary": "#004ac6",
+                "inverse-on-surface": "#eaf1ff",
+                "on-secondary": "#ffffff",
+                "surface": "#f8f9ff",
+                "primary-fixed": "#dbe1ff",
+                "surface-container-lowest": "#ffffff",
+                "inverse-surface": "#27313f",
+                "secondary-fixed": "#d8e2ff",
+                "on-tertiary-fixed": "#360f00",
+                "tertiary-fixed": "#ffdbcd",
+                "surface-card": "#FFFFFF",
+                "surface-container": "#e6eeff",
+                "on-primary": "#ffffff",
+                "on-tertiary-container": "#ffede6",
+                "surface-container-high": "#dee9fc",
+                "secondary-fixed-dim": "#adc6ff",
+                "surface-dim": "#d0dbed",
+                "surface-variant": "#d9e3f6",
+                "text-muted": "#6B7280",
+                "status-success": "#10B981",
+                "error-container": "#ffdad6",
+                "secondary-container": "#2170e4",
+                "surface-tint": "#0053db",
+                "on-primary-fixed-variant": "#003ea8",
+                "tertiary-container": "#bc4800",
+                "outline": "#737686",
+                "outline-variant": "#c3c6d7",
+                "primary-container": "#2563eb",
+                "inverse-primary": "#b4c5ff",
+                "status-warning": "#F59E0B",
+                "primary-fixed-dim": "#b4c5ff",
+                "text-secondary": "#374151",
+                "tertiary-fixed-dim": "#ffb596",
+                "on-background": "#121c2a",
+                "secondary": "#0058be",
+                "on-error-container": "#93000a",
+                "text-primary": "#1F2937",
+                "on-surface": "#121c2a",
+                "surface-container-low": "#eff4ff",
+                "on-secondary-fixed": "#001a42",
+                "surface-bright": "#f8f9ff",
+                "error": "#ba1a1a",
+                "on-error": "#ffffff",
+                "on-secondary-container": "#fefcff",
+                "on-secondary-fixed-variant": "#004395",
+                "on-primary-fixed": "#00174b",
+                "surface-base": "#F9FAFB",
+                "background": "#f8f9ff",
+                "tertiary": "#943700",
+                "on-tertiary-fixed-variant": "#7d2d00"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "xl": "32px",
+                "inspector-width": "300px",
+                "max-content-width": "1440px",
+                "md": "16px",
+                "sidebar-width": "260px",
+                "sm": "12px",
+                "xs": "4px",
+                "lg": "24px",
+                "base": "8px"
+            },
+            "fontFamily": {
+                "label-sm": ["Inter"],
+                "body-lg": ["Inter"],
+                "body-md": ["Inter"],
+                "display-lg": ["Inter"],
+                "headline-lg-mobile": ["Inter"],
+                "headline-md": ["Inter"],
+                "headline-sm": ["Inter"],
+                "body-sm": ["Inter"],
+                "headline-lg": ["Inter"],
+                "code-md": ["JetBrains Mono"],
+                "label-md": ["Inter"]
+            },
+            "fontSize": {
+                "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "code-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
             }
-          }
-        }
+          },
+        },
       }
-</script>
-</head>
-<body class="font-body-md text-body-md overflow-x-hidden">
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="font-body-md text-body-md overflow-x-hidden">
 <!-- SideNavBar Integration -->
 <aside id="sidebar" class="fixed left-0 top-0 h-full flex flex-col py-md border-r border-outline-variant bg-surface dark:bg-on-background w-sidebar-width z-40 sidebar-transition">
 <div class="px-md mb-xl flex items-center gap-sm">
@@ -146,19 +125,19 @@
 <span class="font-label-md">Dashboard</span>
 </a>
 <a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
-<span class="material-symbols-outined" data-icon="folder_open">folder_open</span>
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
 <span class="font-label-md">My Projects</span>
 </a>
 <a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
-<span class="material-symbols-outined" data-icon="add_box">add_box</span>
+<span class="material-symbols-outlined" data-icon="add_box">add_box</span>
 <span class="font-label-md">New Project</span>
 </a>
 <a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
-<span class="material-symbols-outined" data-icon="analytics">analytics</span>
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
 <span class="font-label-md">Analytics</span>
 </a>
 <a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
-<span class="material-symbols-outined" data-icon="settings">settings</span>
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
 <span class="font-label-md">Settings</span>
 </a>
 </nav>
@@ -168,12 +147,12 @@
             </button>
 </div>
 <div class="border-t border-outline-variant pt-sm mt-sm">
-<a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition_all duration-200 ease-out rounded-lg group">
-<span class="material-symbols-outined" data-icon="description">description</span>
+<a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
+<span class="material-symbols-outlined" data-icon="description">description</span>
 <span class="font-label-md">Documentation</span>
 </a>
-<a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition_all duration-200 ease-out rounded-lg group">
-<span class="material-symbols-outined" data-icon="forum">forum</span>
+<a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
 <span class="font-label-md">Feedback</span>
 </a>
 </div>
@@ -185,7 +164,7 @@
 <div class="flex items-center gap-md flex-1">
 <h1 class="font-headline-sm font-bold text-primary">AI Software Architect</h1>
 <div class="relative max-w-md w-full ml-xl hidden md:block">
-<span class="material-symbols-outined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
 <input type="text" placeholder="Search projects..." class="w-full bg-surface-bright border border-outline-variant rounded-full pl-10 pr-4 py-1.5 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
 </div>
 </div>
@@ -194,8 +173,17 @@
   <button class="text-label-md text-on-surface-variant hover:text-primary transition-colors">Sign In</button>
   <button class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</button>
   <button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors flex items-center justify-center" id="theme-toggle">
-    <span class="material-symbols-outined text-on-surface-variant">dark_mode</span>
+    <span class="material-symbols-outlined text-on-surface-variant">dark_mode</span>
   </button>
+</div>
+<div class="flex items-center gap-xs ml-md">
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-status-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
 </div>
 <div class="ml-sm pl-sm border-l border-outline-variant">
 <img class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer hover:ring-2 hover:ring-primary transition-all" data-alt="Close-up portrait of a professional software architect with a thoughtful expression. He is wearing modern, thin-framed glasses and a dark charcoal turtleneck against a blurred, high-end tech office background. The lighting is soft and directional, highlighting a modern light-mode aesthetic. The image is clean, sharp, and corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgjfOJOrijvhQMn5P08ClLvH4xPvQHGm-ghB5lh-tOrUDN4dMFzT7yEsWIF6qhtJrFGnLKW8gFCINi1ejLzhoDHK7dGy_JAikxq2rndxsgwroyLqMjAHc0gAFspz5LlYf7WbT513k0Ru_6lWn4RGsiCcvGtg5j4CSXyeFidZPq93IiwdP2ar0NGsU94mPGJbT5aKBPDIGXxCrgY2sRE1PZGwfM5an1Xhbt5gfcReppRJrU8XXf-14o">
@@ -211,11 +199,11 @@
 </div>
 <div class="flex gap-sm">
 <button class="flex items-center gap-xs px-md py-sm bg-surface-card border border-outline-variant rounded-xl text-label-md hover:bg-surface-container-high transition-all">
-<span class="material-symbols-outined">filter_list</span>
+<span class="material-symbols-outlined">filter_list</span>
                         Filter
                     </button>
 <button class="flex items-center gap-xs px-md py-sm bg-surface-card border border-outline-variant rounded-xl text-label-md hover:bg-surface-container-high transition-all">
-<span class="material-symbols-outined">sort</span>
+<span class="material-symbols-outlined">sort</span>
                         Sort
                     </button>
 </div>
@@ -227,35 +215,35 @@
 <div class="flex items-start justify-between">
 <div class="flex items-center gap-sm">
 <div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center">
-<span class="material-symbols-outined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">terminal</span>
 </div>
 <div class="">
 <h3 class="font-headline-sm text-on-surface">Nexus-Frontend</h3>
-<div class="flex items-center gap-xs text-label-sm text_on-surface-variant">
-<span class="material-symbols-outined text-sm">link</span>
+<div class="flex items-center gap-xs text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">link</span>
                                     github.com/arch-ai/nexus-fe
                                 </div>
 </div>
 </div>
 <button class="p-1 rounded hover:bg-surface-container transition-colors">
-<span class="material-symbols-outined text_on_surface_variant">more_vert</span>
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
 </button>
 </div>
 <div class="bg-surface-container-low rounded-lg p-sm">
 <div class="flex items-center justify-between mb-sm">
-<span class="text-label-sm text_on_surface_variant">Architecture Health</span>
-<span class="text-label-sm font-bold text_status_success">98%</span>
+<span class="text-label-sm text-on-surface-variant">Architecture Health</span>
+<span class="text-label-sm font-bold text-status-success">98%</span>
 </div>
-<div class="w-full bg-outline-variant h-1.5 rounded-full overflow_hidden">
-<div class="bg_status_success h-full w-[98%]"></div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success h-full w-[98%]"></div>
 </div>
 </div>
-<div class="mt-auto pt_sm border-t border-outline-variant flex items-center justify-between">
-<div class="flex items-center gap-xs text_status_success text_label_sm">
-<span class="w-2 h-2 rounded-full bg_status_success"></span>
+<div class="mt-auto pt-sm border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-xs text-status-success text-label-sm">
+<span class="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>
                             Synced
                         </div>
-<span class="text_label_sm text_on_surface_variant">Last updated: 2m ago</span>
+<span class="text-label-sm text-on-surface-variant">Last updated: 2m ago</span>
 </div>
 </div>
 <!-- Project Card 2 -->
@@ -263,128 +251,128 @@
 <div class="flex items-start justify-between">
 <div class="flex items-center gap-sm">
 <div class="w-10 h-10 rounded bg-secondary-container flex items-center justify-center">
-<span class="material-symbols_outined text_on_secondary_container" style="font-variation-settings: 'FILL' 1;">hub</span>
+<span class="material-symbols-outlined text-on-secondary-container" style="font-variation-settings: 'FILL' 1;">hub</span>
 </div>
 <div>
-<h3 class="font_headline_sm text_on_surface">Data-Pipeline-V3</h3>
-<div class="flex items_center gap_xs text_label_sm text_on_surface_variant">
-<span class="material-symbols_outined text_sm">link</span>
+<h3 class="font-headline-sm text-on-surface">Data-Pipeline-V3</h3>
+<div class="flex items-center gap-xs text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">link</span>
                                     github.com/arch-ai/pipeline-v3
                                 </div>
 </div>
 </div>
-<button class="p-1 rounded hover:bg_surface_container transition-colors">
-<span class="material-symbols_outined text_on_surface_variant">more_vert</span>
+<button class="p-1 rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
 </button>
 </div>
-<div class="bg_surface_container_low rounded-lg p-sm">
-<div class="flex items_center justify_between mb-sm">
-<span class="text_label_sm text_on_surface_variant">Architecture Health</span>
-<span class="text_label_sm font_bold text_status_warning">76%</span>
+<div class="bg-surface-container-low rounded-lg p-sm">
+<div class="flex items-center justify-between mb-sm">
+<span class="text-label-sm text-on-surface-variant">Architecture Health</span>
+<span class="text-label-sm font-bold text-status-warning">76%</span>
 </div>
-<div class="w-full bg_outline_variant h-1_5 rounded-full overflow_hidden">
-<div class="bg_status_warning h-full w-[76%]"></div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-warning h-full w-[76%]"></div>
 </div>
 </div>
-<div class="mt_auto pt_sm border_t border_outline_variant flex_items_center justify_between">
-<div class="flex items_center gap_xs text_status_success text_label_sm">
-<span class="w-2 h-2 rounded_full bg_status_success"></span>
+<div class="mt-auto pt-sm border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-xs text-status-success text-label-sm">
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
                             Synced
                         </div>
-<span class="text_label_sm text_on_surface_variant">Last updated: 14h ago</span>
+<span class="text-label-sm text-on-surface-variant">Last updated: 14h ago</span>
 </div>
 </div>
 <!-- Project Card 3 -->
-<div class="bg_surface_card border border_outline_variant rounded-xl p-md flex flex_col gap_md card_hover transition_all duration_200">
-<div class="flex items_start justify_between">
-<div class="flex items_center gap_sm">
-<div class="w-10 h-10 rounded bg_tertiary_container flex items_center justify_center">
-<span class="material-symbols_outined text_on_tertiary_container" style="font-variation-settings: 'FILL' 1;">security</span>
+<div class="bg-surface-card border border-outline-variant rounded-xl p-md flex flex-col gap-md card-hover transition-all duration-200">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded bg-tertiary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-tertiary-container" style="font-variation-settings: 'FILL' 1;">security</span>
 </div>
 <div>
-<h3 class="font_headline_sm text_on_surface">Auth-Microservice</h3>
-<div class="flex items_center gap_xs text_label_sm text_on_surface_variant">
-<span class="material-symbols_outined text_sm">link</span>
+<h3 class="font-headline-sm text-on-surface">Auth-Microservice</h3>
+<div class="flex items-center gap-xs text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-sm">link</span>
                                     github.com/arch-ai/auth-svc
                                 </div>
 </div>
 </div>
-<button class="p-1 rounded hover:bg_surface_container transition-colors">
-<span class="material-symbols_outined text_on_surface_variant">more_vert</span>
+<button class="p-1 rounded hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
 </button>
 </div>
-<div class="bg_surface_container_low rounded-lg p-sm">
-<div class="flex items_center justify_between mb-sm">
-<span class="text_label_sm text_on_surface_variant">Architecture Health</span>
-<span class="text_label_sm font_bold text_status_success">92%</span>
+<div class="bg-surface-container-low rounded-lg p-sm">
+<div class="flex items-center justify-between mb-sm">
+<span class="text-label-sm text-on-surface-variant">Architecture Health</span>
+<span class="text-label-sm font-bold text-status-success">92%</span>
 </div>
-<div class="w-full bg_outline_variant h-1_5 rounded-full overflow_hidden">
-<div class="bg_status_success h-full w-[92%]"></div>
+<div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+<div class="bg-status-success h-full w-[92%]"></div>
 </div>
 </div>
-<div class="mt_auto pt_sm border_t border_outline_variant flex_items_center justify_between">
-<div class="flex items_center gap_xs text_status_success text_label_sm">
-<span class="w-2 h-2 rounded_full bg_status_success"></span>
+<div class="mt-auto pt-sm border-t border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-xs text-status-success text-label-sm">
+<span class="w-2 h-2 rounded-full bg-status-success"></span>
                             Synced
                         </div>
-<span class="text_label_sm text_on_surface_variant">Last updated: 1d ago</span>
-</div>
+<span class="text-label-sm text-on-surface-variant">Last updated: 1d ago</span>
 </div>
 </div>
 <!-- Add New Project Card -->
-<div class="border-2 border-dashed border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm cursor-pointer hover:bg_surface_container_low hover:border-primary transition_all group min-h-[220px]">
-<div class="w-12 h-12 rounded-full bg_surface_container_high flex items_center justify_center group_hover:bg_primary group_hover:text_on_primary transition-colors">
-<span class="material-symbols_outined text_headline_md">add</span>
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm cursor-pointer hover:bg-surface-container-low hover:border-primary transition-all group min-h-[220px]">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-headline-md">add</span>
 </div>
-<span class="font_label_md text_on_surface_variant group_hover:text_primary">Create New Project</span>
+<span class="font-label-md text-on-surface-variant group-hover:text-primary">Create New Project</span>
 </div>
 </div>
 <!-- Bento-style Analytics Summary -->
-<div class="mt-xl grid grid-cols-1 md:grid-cols_4 gap-lg">
-<div class="md:col_span-2 bg_surface_container rounded-2xl p_lg relative overflow_hidden">
+<div class="mt-xl grid grid-cols-1 md:grid-cols-4 gap-lg">
+<div class="md:col-span-2 bg-surface-container rounded-2xl p-lg relative overflow-hidden">
 <div class="relative z-10">
-<h4 class="font_headline_sm text_primary mb-xs">Architecture Optimization</h4>
-<p class="text_body_sm text_on_surface_variant mb-md max-w-xs">AI suggestions can reduce your average latency by 140ms across all microservices.</p>
-<button class="bg_primary text_on_primary px_md py_sm rounded_ed text_label_md">Review Insights</button>
+<h4 class="font-headline-sm text-primary mb-xs">Architecture Optimization</h4>
+<p class="text-body-sm text-on-surface-variant mb-md max-w-xs">AI suggestions can reduce your average latency by 140ms across all microservices.</p>
+<button class="bg-primary text-on-primary px-md py-sm rounded-xl text-label-md">Review Insights</button>
 </div>
 <div class="absolute -bottom-10 -right-10 opacity-10">
-<span class="material-symbols_outined text_[200px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
 </div>
 </div>
-<div class="bg_surface_card border border-outline-variant rounded-2xl p_lg flex flex_col justify_between">
-<div class="flex items_center justify_between">
-<span class="material-symbols_outined text_primary">security_update_good</span>
-<span class="text_label_sm bg_status_success/10 text_status_success px-2 py-1 rounded">Stable</span>
-</div>
-<div>
-<span class="text_display_lg font_bold block">12</span>
-<span class="text_label_md text_on_surface_variant uppercase tracking_wider">Security Patches</span>
-</div>
-</div>
-<div class="bg_surface_card border border-outline-variant rounded-2xl p_lg flex flex_col justify_between">
-<div class="flex items_center justify_between">
-<span class="material-symbols_outined text_status_error">bug_report</span>
-<span class="text_label_sm bg_status_error/10 text_status_error px-2 py-1 rounded">Action Required</span>
+<div class="bg-surface-card border border-outline-variant rounded-2xl p-lg flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-primary">security_update_good</span>
+<span class="text-label-sm bg-status-success/10 text-status-success px-2 py-1 rounded">Stable</span>
 </div>
 <div>
-<span class="text_display_lg font_bold block">04</span>
-<span class="text_label_md text_on_surface_variant uppercase tracking_wider">System Bottlenecks</span>
+<span class="text-display-lg font-bold block">12</span>
+<span class="text-label-md text-on-surface-variant uppercase tracking-wider">Security Patches</span>
+</div>
+</div>
+<div class="bg-surface-card border border-outline-variant rounded-2xl p-lg flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="material-symbols-outlined text-status-error">bug_report</span>
+<span class="text-label-sm bg-status-error/10 text-status-error px-2 py-1 rounded">Action Required</span>
+</div>
+<div>
+<span class="text-display-lg font-bold block">04</span>
+<span class="text-label-md text-on-surface-variant uppercase tracking-wider">System Bottlenecks</span>
+</div>
 </div>
 </div>
 </div>
 </main>
 <!-- Floating Action Button for New Architecture Check -->
 <div class="fixed bottom-xl right-xl z-50">
-<button class="flex items-center gap-md bg_primary text_on_primary p_4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition_all">
-<span class="material-symbols_outined">auto_fix_high</span>
-<span class="font_label_md pr-2">Quick Scan</span>
+<button class="flex items-center gap-md bg-primary text-on-primary p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined">auto_fix_high</span>
+<span class="font-label-md pr-2">Quick Scan</span>
 </button>
 </div>
 <script class="">
         // Micro-interactions for sidebar
         const sidebar = document.getElementById('sidebar');
         // Simple hover effect or toggle functionality could go here
-
+        
         // Add some dynamic delay to project card animations
         document.querySelectorAll('.card-hover').forEach((card, index) => {
             card.style.opacity = '0';

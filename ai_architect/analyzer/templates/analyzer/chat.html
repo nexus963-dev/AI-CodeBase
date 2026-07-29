@@ -1,0 +1,412 @@
+<!DOCTYPE html><html lang="en" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#d9e3f6",
+                    "status-error": "#EF4444",
+                    "on-surface-variant": "#434655",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-container": "#eeefff",
+                    "primary": "#004ac6",
+                    "inverse-on-surface": "#eaf1ff",
+                    "on-secondary": "#ffffff",
+                    "surface": "#f8f9ff",
+                    "primary-fixed": "#dbe1ff",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-surface": "#27313f",
+                    "secondary-fixed": "#d8e2ff",
+                    "on-tertiary-fixed": "#360f00",
+                    "tertiary-fixed": "#ffdbcd",
+                    "surface-card": "#FFFFFF",
+                    "surface-container": "#e6eeff",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-container": "#ffede6",
+                    "surface-container-high": "#dee9fc",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "surface-dim": "#d0dbed",
+                    "surface-variant": "#d9e3f6",
+                    "text-muted": "#6B7280",
+                    "status-success": "#10B981",
+                    "error-container": "#ffdad6",
+                    "secondary-container": "#2170e4",
+                    "surface-tint": "#0053db",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "tertiary-container": "#bc4800",
+                    "outline": "#737686",
+                    "outline-variant": "#c3c6d7",
+                    "primary-container": "#2563eb",
+                    "inverse-primary": "#b4c5ff",
+                    "status-warning": "#F59E0B",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "text-secondary": "#374151",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "on-background": "#121c2a",
+                    "secondary": "#0058be",
+                    "on-error-container": "#93000a",
+                    "text-primary": "#1F2937",
+                    "on-surface": "#121c2a",
+                    "surface-container-low": "#eff4ff",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-bright": "#f8f9ff",
+                    "error": "#ba1a1a",
+                    "on-error": "#ffffff",
+                    "on-secondary-container": "#fefcff",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-primary-fixed": "#00174b",
+                    "surface-base": "#F9FAFB",
+                    "background": "#f8f9ff",
+                    "tertiary": "#943700",
+                    "on-tertiary-fixed-variant": "#7d2d00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xl": "32px",
+                    "inspector-width": "300px",
+                    "max-content-width": "1440px",
+                    "md": "16px",
+                    "sidebar-width": "260px",
+                    "sm": "12px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-sm": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "code-md": ["JetBrains Mono"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "code-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+            }
+          },
+        },
+      }
+    }catch(_e){}</script><meta charset="utf-8"></head><body class="bg-surface text-on-surface font-body-md overflow-hidden h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-md h-14 w-full shadow-sm bg-surface-container-low border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<div class="text-headline-sm font-headline-sm font-bold text-primary">AI Software Architect</div>
+<div class="h-6 w-px bg-outline-variant mx-2"></div>
+<nav class="flex items-center gap-xs font-label-md text-label-md">
+<span class="text-on-surface-variant">Projects</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+<span class="text-on-surface-variant font-bold">cloud-native-scaler</span>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+<span class="text-primary font-bold">Architecture Visualization</span>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="flex items-center bg-surface-container-highest rounded-full px-sm py-1">
+<span class="material-symbols-outlined text-outline mr-2 text-sm">search</span>
+<input type="text" placeholder="Search architecture..." class="bg-transparent border-none focus:ring-0 text-label-md w-48">
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors text-on-surface-variant">
+  <span class="material-symbols-outlined">light_mode</span>
+</button>
+<button class="px-md py-1.5 text-label-md text-primary font-bold hover:bg-primary/5 rounded-xl transition-colors">
+  Sign In
+</button>
+<button class="bg-primary text-on-primary px-md py-1.5 rounded-xl font-label-md hover:brightness-110 active:scale-95 transition-all">
+  Sign Up
+</button>
+<img class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A professional headshot of a senior software architect with a focused expression, set against a blurred modern office background with soft blue lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7kFZaQhch3KFP95ZR3tQVPQ2RGXng0Cnyjm3bSq4PkwpeHfmt3hbHhw72SjOdBlEJQzw1HTgVQIyZrcaRIzTgtc_uu03jjRGKFolib3t7tb_kK9-F0n1jyRB-bfY7DQGLnVdYf76ar-H-zD9cGPxhvkleYBDUzbHdh1a8dtc5ovdECp5yXKyYVvFv5-LKjNU8Q1LhcstzLbzl3qGwDqKC21FBJv48pcfPDWP9mO3xQD5iG_bhYHC-">
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar: Explorer -->
+<aside class="w-sidebar-width border-r border-outline-variant bg-surface-container-low flex flex-col">
+<div class="p-md flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase tracking-wider text-outline">Explorer</span>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary">create_new_folder</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar px-sm">
+<!-- Tree View -->
+<div class="space-y-1">
+<div class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+<span class="material-symbols-outlined text-[20px] text-primary">folder_open</span>
+<span class="text-label-md">src</span>
+</div>
+<div class="ml-4 space-y-1 border-l border-outline-variant pl-2">
+<div class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_right</span>
+<span class="material-symbols-outlined text-[20px] text-primary">folder</span>
+<span class="text-label-md">components</span>
+</div>
+<div class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_down</span>
+<span class="material-symbols-outlined text-[20px] text-primary">folder_open</span>
+<span class="text-label-md">services</span>
+</div>
+<div class="ml-4 space-y-1 border-l border-outline-variant pl-2">
+<div class="flex items-center gap-2 p-1.5 rounded-lg bg-secondary-container text-on-secondary-container cursor-pointer">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="text-label-md">auth-service.ts</span>
+</div>
+<div class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-label-md">data-provider.ts</span>
+</div>
+</div>
+<div class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="text-label-md">app.module.ts</span>
+</div>
+</div>
+<div class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">keyboard_arrow_right</span>
+<span class="material-symbols-outlined text-[20px] text-primary">folder</span>
+<span class="text-label-md">tests</span>
+</div>
+<div class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-surface-container-high cursor-pointer text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="text-label-md">package.json</span>
+</div>
+</div>
+</div>
+<div class="p-md border-t border-outline-variant">
+<button class="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-primary text-on-primary font-label-md shadow-sm hover:shadow-md transition-all">
+<span class="material-symbols-outlined text-sm">analytics</span>
+                    Analyze Repository
+                </button>
+</div>
+</aside>
+<!-- Center Panel: Content Area -->
+<main class="flex-1 flex flex-col bg-surface relative min-w-0">
+<!-- Tabs Bar -->
+<div class="flex items-center bg-surface-container-low border-b border-outline-variant px-sm gap-2">
+<button class="px-md py-3 text-label-md border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">
+                    auth-service.ts
+                </button>
+<button class="px-md py-3 text-label-md border-b-2 border-primary text-primary font-bold bg-surface relative overflow-hidden group">
+                    Architecture Visualization
+                    <div class="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors"></div>
+</button>
+<button class="px-md py-3 text-label-md border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-colors">
+                    Dependency Report
+                </button>
+</div>
+<!-- Breadcrumbs -->
+<div class="px-md py-2 bg-surface-container-lowest border-b border-outline-variant flex items-center gap-2 text-label-sm text-outline">
+<span class="material-symbols-outlined text-sm">home</span>
+<span class="">/</span>
+<span class="">src</span>
+<span class="">/</span>
+<span class="">services</span>
+<span class="">/</span>
+<span class="text-on-surface font-medium">auth-service.ts</span>
+</div>
+<!-- Visualization Canvas -->
+<div class="flex-1 relative overflow-hidden bg-[#f0f4f8] pattern-dots">
+<!-- Background Pattern -->
+<div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#004ac6 1px, transparent 1px); background-size: 24px 24px;"></div>
+<!-- SVG Dependency Graph Placeholder -->
+<div class="absolute inset-0 flex items-center justify-center p-xl">
+<div class="relative w-full h-full flex items-center justify-center">
+<!-- Node A -->
+<div class="absolute top-1/4 left-1/4 glass-panel border border-primary/20 rounded-xl p-md shadow-lg w-48 z-10 transition-transform hover:scale-105 cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-3 h-3 rounded-full bg-status-success node-pulse"></span>
+<span class="font-bold text-label-md text-primary">AuthService</span>
+</div>
+<div class="text-[10px] text-outline font-mono">/services/auth-service.ts</div>
+<div class="mt-2 h-1 bg-outline-variant rounded-full overflow-hidden">
+<div class="bg-primary h-full w-3/4"></div>
+</div>
+</div>
+<!-- Node B -->
+<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 glass-panel border border-primary/20 rounded-xl p-md shadow-lg w-56 z-10 transition-transform hover:scale-105 cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-3 h-3 rounded-full bg-primary node-pulse"></span>
+<span class="font-bold text-label-md text-primary">DatabaseManager</span>
+</div>
+<div class="text-[10px] text-outline font-mono">/core/db-manager.ts</div>
+<div class="mt-2 flex gap-1">
+<div class="px-1 py-0.5 bg-surface-container-highest rounded text-[8px]">SQL</div>
+<div class="px-1 py-0.5 bg-surface-container-highest rounded text-[8px]">POOLING</div>
+</div>
+</div>
+<!-- Node C -->
+<div class="absolute bottom-1/4 right-1/4 glass-panel border border-primary/20 rounded-xl p-md shadow-lg w-48 z-10 transition-transform hover:scale-105 cursor-pointer">
+<div class="flex items-center gap-2 mb-2">
+<span class="w-3 h-3 rounded-full bg-status-warning node-pulse"></span>
+<span class="font-bold text-label-md text-primary">LoggerService</span>
+</div>
+<div class="text-[10px] text-outline font-mono">/utils/logger.ts</div>
+</div>
+<!-- Connector Lines (Visual Only) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<path d="M 25% 30% Q 50% 30% 50% 50%" fill="none" stroke="url(#gradient1)" stroke-dasharray="5,5" stroke-width="2"></path>
+<path d="M 50% 50% Q 50% 75% 75% 75%" fill="none" stroke="url(#gradient2)" stroke-width="2"></path>
+<defs>
+<linearGradient id="gradient1" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#004ac6;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#004ac6;stop-opacity:0.6"></stop>
+</linearGradient>
+<linearGradient id="gradient2" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#004ac6;stop-opacity:0.6"></stop>
+<stop offset="100%" style="stop-color:#004ac6;stop-opacity:0.2"></stop>
+</linearGradient>
+</defs>
+</svg>
+</div>
+</div>
+<!-- Floating Controls -->
+<div class="absolute bottom-md right-md flex flex-col gap-2">
+<button class="bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md border border-outline-variant text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md border border-outline-variant text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+<button class="bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-md border border-outline-variant text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">filter_center_focus</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Right Sidebar: AI Assistant Chat -->
+<aside class="w-inspector-width border-l border-outline-variant bg-surface flex flex-col shadow-[-4px_0_12px_rgba(0,0,0,0.02)]">
+<div class="p-md border-b border-outline-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="font-headline-sm text-label-md font-bold text-on-surface">Architect AI</span>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-md space-y-lg bg-surface-container-lowest">
+<!-- AI Message -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-primary">auto_awesome</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface-variant">System</span>
+</div>
+<div class="bg-white border border-outline-variant p-md rounded-xl rounded-tl-none shadow-sm text-body-sm text-on-surface">
+                        Hello! I've analyzed your current repository. The <span class="font-mono text-primary bg-primary/5 px-1">AuthService</span> seems to have high coupling with the database layer. Would you like me to suggest a repository pattern implementation?
+                    </div>
+</div>
+<!-- User Message -->
+<div class="flex flex-col gap-2 items-end">
+<div class="flex items-center gap-2 flex-row-reverse">
+<img class="w-6 h-6 rounded-full" data-alt="A small circular avatar of a developer in a dark hoodie, representing the user in a tech-focused interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGwmCBLGe5Bw7eBoua3d1ss1qPc9_4k542LXkz-7rjhvBwsNSANe5weupMYms1bCwRBzsKz1OzdWOwTA2wU1TgekMRFfcsBxnC6ejd6SYmLgArWCxptgR3xslEL7b4UR3sIpC28MAC4Jyy7u22-ZQ-nUhBCAMs2ev4FV6hlauYY9DCnz4yTRdS36gsNk9VSRg842Su4uezNM2BEH1SDdy2qtsGXZubZ6fWDtNqsPdqCopPxcgioR2E">
+<span class="text-label-sm font-bold text-on-surface-variant">You</span>
+</div>
+<div class="bg-primary text-on-primary p-md rounded-xl rounded-tr-none shadow-md text-body-sm">
+                        Yes, please show me how the refactored code would look for the constructor.
+                    </div>
+</div>
+<!-- AI Response with Code -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-primary">auto_awesome</span>
+</div>
+<span class="text-label-sm font-bold text-on-surface-variant">System</span>
+</div>
+<div class="bg-white border border-outline-variant p-md rounded-xl rounded-tl-none shadow-sm text-body-sm text-on-surface space-y-md">
+<p class="">Here is the refactored constructor using dependency injection for the repository:</p>
+<div class="bg-inverse-surface rounded-lg p-sm relative group">
+<button class="absolute top-2 right-2 text-outline hover:text-white opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+</button>
+<pre class="font-code-md text-code-md text-surface-container-highest overflow-x-auto custom-scrollbar"><code>constructor(
+  private readonly repo: IAuthRepo,
+  private readonly logger: ILogger
+) {
+  this.init();
+}</code></pre>
+</div>
+<p class="text-[12px] text-outline italic">Applying this change will reduce the coupling score by 14%.</p>
+</div>
+</div>
+</div>
+<!-- Chat Input -->
+<div class="p-md bg-surface border-t border-outline-variant">
+<div class="relative group">
+<textarea class="w-full bg-surface-container-low border border-outline-variant rounded-xl px-md py-3 pr-12 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-sm resize-none custom-scrollbar" placeholder="Ask the architect..." rows="1"></textarea>
+<button class="absolute right-2 bottom-2 p-1.5 bg-primary text-on-primary rounded-lg shadow-sm hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-sm">send</span>
+</button>
+</div>
+<div class="flex items-center justify-between mt-2 px-1">
+<div class="flex gap-2">
+<span class="material-symbols-outlined text-sm text-outline hover:text-primary cursor-pointer">attach_file</span>
+<span class="material-symbols-outlined text-sm text-outline hover:text-primary cursor-pointer">mic</span>
+</div>
+<span class="text-[10px] text-outline">GPT-4 Turbo • 128k context</span>
+</div>
+</div>
+</aside>
+</div>
+<!-- Status Bar -->
+<footer class="h-6 bg-primary text-on-primary px-md flex items-center justify-between text-[11px] font-medium">
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">sync</span>
+<span class="">Workspace Synced</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">account_tree</span>
+<span class="">Branch: main</span>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<span class="">LN 14, COL 32</span>
+<span class="">UTF-8</span>
+<div class="flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-status-success shadow-[0_0_8px_#10B981]"></span>
+<span class="">AI Agent: Online</span>
+</div>
+</div>
+</footer>
+<script class="">
+        // Simple auto-resize for the textarea
+        const tx = document.getElementsByTagName("textarea");
+        for (let i = 0; i < tx.length; i++) {
+          tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+          tx[i].addEventListener("input", OnInput, false);
+        }
+
+        function OnInput() {
+          this.style.height = "auto";
+          this.style.height = (this.scrollHeight) + "px";
+          if(this.scrollHeight > 120) {
+              this.style.overflowY = "scroll";
+              this.style.height = "120px";
+          }
+        }
+    </script>
+
+</body></html>
