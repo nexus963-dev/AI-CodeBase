@@ -1,0 +1,32 @@
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0*   Trying [::1]:8000...
+*   Trying 127.0.0.1:8000...
+* Established connection to localhost (127.0.0.1 port 8000) from 127.0.0.1 port 51570 
+* using HTTP/1.x
+> GET /logout/ HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/8.19.0
+> Accept: */*
+> Cookie: sessionid=gwyxl5qq4xqqlul5nqgco4s8to2t87r0; csrftoken=NQxXoXmEIrzggDLJTDSZLyK6day79qBu
+> 
+* Request completely sent off
+< HTTP/1.1 302 Found
+< Date: Thu, 30 Jul 2026 07:07:34 GMT
+< Server: WSGIServer/0.2 CPython/3.11.0
+< Content-Type: text/html; charset=utf-8
+< Location: /
+< X-Frame-Options: DENY
+< Content-Length: 0
+< Vary: Cookie
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Cross-Origin-Opener-Policy: same-origin
+< Set-Cookie:  messages=W1siX19qc29uX21lc3NhZ2UiLDAsMjAsIllvdSBoYXZlIGJlZW4gbG9nZ2VkIG91dC4iLCIiXV0:1wpKre:k0ujJIyLEEzamKDOVRnApNSpaCK5H_vzLKxLFO4sDrA; HttpOnly; Path=/; SameSite=Lax
+< Set-Cookie:  sessionid=""; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/; SameSite=Lax
+< 
+  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0  0      0   0      0   0      0      0      0                              0
+* Connection #0 to host localhost:8000 left intact

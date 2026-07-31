@@ -186,25 +186,17 @@
 </div>
 <div class="flex items-center gap-sm">
 <div class="flex items-center gap-md mr-2">
-  {% if user.is_authenticated %}
-    <div class="flex items-center space-x-2 text-sm text-on-surface-variant">
-      <span class="material-symbols-outlined text-[20px]">person</span>
-      <span class="font-medium">{{ user.first_name|default:user.username }}</span>
-    </div>
-    <a href="{% url 'analyzer:dashboard' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Dashboard</a>
-  {% else %}
-    <button class="text-label-md text-on-surface-variant hover:text-primary transition-colors">Sign In</button>
-    <button class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</button>
-  {% endif %}
+  <button class="text-label-md text-on-surface-variant hover:text-primary transition-colors">Sign In</button>
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-status-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
 </div>
-<div class="flex items-center gap-xs ml-md">
-  <button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors relative">
-    <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-    <span class="absolute top-2 right-2 w-2 h-2 bg-status-error rounded-full"></span>
-  </button>
-  <button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors">
-    <span class="material-symbols-outlined text-on-surface-variant">help</span>
-  </button>
+<div class="ml-sm pl-sm border-l border-outline-variant">
+<img class="w-8 h-8 rounded-full border border-outline-variant object-cover cursor-pointer hover:ring-2 hover:ring-primary transition-all" data-alt="Close-up portrait of a professional software architect with a thoughtful expression. He is wearing modern, thin-framed glasses and a dark charcoal turtleneck against a blurred, high-end tech office background. The lighting is soft and directional, highlighting a modern light-mode aesthetic. The image is clean, sharp, and corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgjfOJOrijvhQMn5P08ClLvH4xPvQHGm-ghB5lh-tOrUDN4dMFzT7yEsWIF6qhtJrFGnLKW8gFCINi1ejLzhoDHK7dGy_JAikxq2rndxsgwroyLqMjAHc0gAFspz5LlYf7WbT513k0Ru_6lWn4RGsiCcvGtg5j4CSXyeFidZPq93IiwdP2ar0NGsU94mPGJbT5aKBPDIGXxCrgY2sRE1PZGwfM5an1Xhbt5gfcReppRJrU8XXf-14o">
+</div>
 </div>
 </header>
 <!-- Dashboard Content -->

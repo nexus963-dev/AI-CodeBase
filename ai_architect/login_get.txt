@@ -1,0 +1,30 @@
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0*   Trying [::1]:8000...
+*   Trying 127.0.0.1:8000...
+* Established connection to localhost (127.0.0.1 port 8000) from 127.0.0.1 port 55138 
+* using HTTP/1.x
+> GET /login/ HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/8.19.0
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Date: Thu, 30 Jul 2026 07:01:02 GMT
+< Server: WSGIServer/0.2 CPython/3.11.0
+< Content-Type: text/html; charset=utf-8
+< X-Frame-Options: DENY
+< Vary: Cookie
+< Content-Length: 14692
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Cross-Origin-Opener-Policy: same-origin
+< Set-Cookie:  csrftoken=aQKwHehsMBTDSMcR9o4TehFfl0oTJT9Q; expires=Thu, 29 Jul 2027 07:01:02 GMT; Max-Age=31449600; Path=/; SameSite=Lax
+< 
+{ [14692 bytes data]
+100  14692 100  14692   0      0  67064      0                              0100  14692 100  14692   0      0  66998      0                              0100  14692 100  14692   0      0  66934      0                              0
+* Connection #0 to host localhost:8000 left intact

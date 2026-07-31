@@ -155,24 +155,18 @@
 <!-- Form -->
 <form action="{% url 'analyzer:signup' %}" method="POST" class="space-y-md">
     {% csrf_token %}
-    <!-- Messages -->
-    {% if messages %}
-        {% for message in messages %}
-        <div class="p-4 mb-4 rounded-lg {% if message.tags == "error" %}bg-red-100 text-red-700{% elif message.tags == "success" %}bg-green-100 text-green-700{% elif message.tags == "warning" %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    {% endif %}
 <!-- Full Name -->
 <div class="space-y-xs">
-    <label class="font-label-md text-label-md text-on-surface-variant block" for="name">Full Name</label>
-    <div class="relative group">
-        <div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none text-outline">
-            <span class="material-symbols-outlined text-[20px]">person</span>
-        </div>
-        <input class="w-full h-10 pl-11 pr-md bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-sm placeholder:text-text-muted" id="name" name="name" placeholder="John Architect" type="text"/>
-    </div>
+<label class="font-label-md text-label-md text-on-surface-variant block" for="name">Full Name</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">person</span>
 </div>
+<input class="w-full h-10 pl-11 pr-md bg-surface border border-outline-variant rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-all font-body-sm placeholder:text-text-muted" id="name" name="name" placeholder="John Architect" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-xs">
 <label class="font-label-md text-label-md text-on-surface-variant block" for="email">Email Address</label>
 <div class="relative group">
 <div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none text-outline">

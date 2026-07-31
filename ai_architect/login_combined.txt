@@ -1,5 +1,33 @@
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0*   Trying [::1]:8000...
+*   Trying 127.0.0.1:8000...
+* Established connection to localhost (127.0.0.1 port 8000) from 127.0.0.1 port 64121 
+* using HTTP/1.x
+> GET /login/ HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/8.19.0
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Date: Thu, 30 Jul 2026 07:06:12 GMT
+< Server: WSGIServer/0.2 CPython/3.11.0
+< Content-Type: text/html; charset=utf-8
+< X-Frame-Options: DENY
+< Vary: Cookie
+< Content-Length: 14692
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Cross-Origin-Opener-Policy: same-origin
+< Set-Cookie:  csrftoken=OyouFhz8WrhJ7oG2SSHTkkNRVqrShMO7; expires=Thu, 29 Jul 2027 07:06:12 GMT; Max-Age=31449600; Path=/; SameSite=Lax
+< 
+{ [14692 bytes data]
 <!DOCTYPE html>
-{% load static %}
+
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -140,56 +168,13 @@
 </head>
 <body class="min-h-screen flex flex-col relative architectural-bg selection:bg-primary-fixed-dim">
 <!-- Top Navigation Anchor -->
-<header class="sticky top-0 z-50 flex items-center justify-between px-md h-14 w-full bg-surface-container-low shadow-sm border-b border-outline-variant">
-<div class="flex items-center gap-base">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">architecture</span>
-<span class="text-headline-sm font-headline-sm font-bold text-primary">AI Software Architect</span>
+<header class="flex justify-between items-center w-full px-lg h-16 sticky top-0 z-50 bg-surface/80 backdrop-blur-md">
+<a class="flex items-center gap-2 group" href="/">
+<div class="w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">architecture</span>
 </div>
-<div class="hidden md:flex items-center gap-lg">
-<a class="text-primary font-bold border-b-2 border-primary font-label-md text-label-md py-1" href="#">Home</a>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Features</a>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Pricing</a>
-</div>
-<div class="flex items-center gap-md">
-<button class="flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors p-2 rounded-full active:scale-95 duration-200" id="theme-toggle">
-<span class="material-symbols-outlined" id="theme-icon">light_mode</span>
-</button>
-<div class="h-6 w-[1px] bg-outline-variant mx-1"></div>
-<div class="flex items-center gap-sm">
-    {% if user.is_authenticated %}
-        <div class="flex items-center space-x-2 text-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[20px]">person</span>
-            <span class="font-medium">{{ user.first_name|default:user.username }}</span>
-        </div>
-        <a href="{% url 'analyzer:dashboard' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Dashboard</a>
-    {% else %}
-        <a href="{% url 'analyzer:login' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Sign In</a>
-        <a href="{% url 'analyzer:signup' %}" class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</a>
-    {% endif %}
-</div>
-</div>
-</header>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Features</a>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Pricing</a>
-</div>
-<div class="flex items-center gap-md">
-<button class="flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors p-2 rounded-full active:scale-95 duration-200" id="theme-toggle">
-<span class="material-symbols-outlined" id="theme-icon">light_mode</span>
-</button>
-<div class="h-6 w-[1px] bg-outline-variant mx-1"></div>
-<div class="flex items-center gap-sm">
-    {% if user.is_authenticated %}
-        <div class="flex items-center space-x-2 text-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[20px]">person</span>
-            <span class="font-medium">{{ user.first_name|default:user.username }}</span>
-        </div>
-        <a href="{% url 'analyzer:dashboard' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Dashboard</a>
-    {% else %}
-        <a href="{% url 'analyzer:login' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Sign In</a>
-        <a href="{% url 'analyzer:signup' %}" class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</a>
-    {% endif %}
-</div>
-</div>
+<span class="text-base font-bold text-primary">ArchAI</span>
+</a>
 </header>
 <!-- Main Content Area -->
 <main class="flex-grow flex items-center justify-center px-md py-xl">
@@ -203,16 +188,10 @@
 <p class="font-body-md text-body-md text-on-surface-variant">Access your system design workspace.</p>
 </div>
 <!-- Authentication Form -->
-<form action="{% url 'analyzer:login' %}" method="POST" class="flex flex-col gap-lg" id="loginForm">
-    {% csrf_token %}
+<form action="/login/" method="POST" class="flex flex-col gap-lg" id="loginForm">
+    <input type="hidden" name="csrfmiddlewaretoken" value="a3jZfbsbmMQ869cAJyK9B6EOQMWJ7KumOrxjKiR983XH3nIsrghSLghvB2drem8j">
     <!-- Messages -->
-    {% if messages %}
-        {% for message in messages %}
-        <div class="p-4 mb-4 rounded-lg {% if message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    {% endif %}
+    
     <!-- Email Field -->
     <div class="flex flex-col gap-xs">
     <label class="font-label-md text-label-md text-on-surface" for="email">Email Address</label>
@@ -227,7 +206,7 @@
     <div class="flex flex-col gap-xs">
     <div class="flex justify-between items-center">
     <label class="font-label-md text-label-md text-on-surface" for="password">Password</label>
-    <a class="font-label-sm text-label-sm text-primary hover:underline transition-all" href="{% url 'analyzer:password_reset' %}">Forgot Password?</a>
+    <a class="font-label-sm text-label-sm text-primary hover:underline transition-all" href="/password-reset/">Forgot Password?</a>
     </div>
     <div class="relative group">
     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-outline">
@@ -265,11 +244,13 @@
                     Sign in with GitHub
                 </button>
 </div>
-<!-- Footer Link -->
+<!-- Foot100  14692 100  14692   0      0  67918      0                              0100  14692 100  14692   0      0  67882      0                              0100  14692 100  14692   0      0  67848      0                              0
+* Connection #0 to host localhost:8000 left intact
+er Link -->
 <div class="text-center pt-md">
 <p class="font-body-sm text-body-sm text-on-surface-variant">
                     Don't have an account?
-                    <a class="text-primary font-bold hover:underline ml-1" href="{% url 'analyzer:signup' %}">Sign Up</a>
+                    <a class="text-primary font-bold hover:underline ml-1" href="/signup/">Sign Up</a>
 </p>
 </div>
 </div>

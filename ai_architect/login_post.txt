@@ -1,0 +1,37 @@
+Note: Unnecessary use of -X or --request, POST is already inferred.
+* Host localhost:8000 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0*   Trying [::1]:8000...
+*   Trying 127.0.0.1:8000...
+* Established connection to localhost (127.0.0.1 port 8000) from 127.0.0.1 port 51599 
+* using HTTP/1.x
+> POST /login/ HTTP/1.1
+> Host: localhost:8000
+> User-Agent: curl/8.19.0
+> Accept: */*
+> Cookie: csrftoken=aQKwHehsMBTDSMcR9o4TehFfl0oTJT9Q
+> Content-Type: application/x-www-form-urlencoded
+> Content-Length: 146
+> 
+} [146 bytes data]
+* upload completely sent off: 146 bytes
+< HTTP/1.1 302 Found
+< Date: Thu, 30 Jul 2026 07:02:59 GMT
+< Server: WSGIServer/0.2 CPython/3.11.0
+< Content-Type: text/html; charset=utf-8
+< Location: /dashboard/
+< X-Frame-Options: DENY
+< Vary: Cookie
+< Content-Length: 0
+< X-Content-Type-Options: nosniff
+< Referrer-Policy: same-origin
+< Cross-Origin-Opener-Policy: same-origin
+< Set-Cookie:  messages=W1siX19qc29uX21lc3NhZ2UiLDAsMjUsIldlbGNvbWUgYmFjaywgdGVzdEBleGFtcGxlLmNvbSEiLCIiXV0:1wpKnD:182RkuWfy5yb_5m_VzmIWpj_IsifnEdAu83HxFteN3g; HttpOnly; Path=/; SameSite=Lax
+< Set-Cookie:  csrftoken=MTbEhyTEwL2yyqc9CdMImfhgF9kmXIl0; expires=Thu, 29 Jul 2027 07:02:59 GMT; Max-Age=31449600; Path=/; SameSite=Lax
+< Set-Cookie:  sessionid=t8cnf45psl1l1pu1tiuq6395mf9zg4ok; expires=Thu, 13 Aug 2026 07:02:59 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+< 
+100    146   0      0 100    146      0    226                              0100    146   0      0 100    146      0    225                              0100    146   0      0 100    146      0    225                              0
+* Connection #0 to host localhost:8000 left intact

@@ -140,56 +140,13 @@
 </head>
 <body class="min-h-screen flex flex-col relative architectural-bg selection:bg-primary-fixed-dim">
 <!-- Top Navigation Anchor -->
-<header class="sticky top-0 z-50 flex items-center justify-between px-md h-14 w-full bg-surface-container-low shadow-sm border-b border-outline-variant">
-<div class="flex items-center gap-base">
-<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">architecture</span>
-<span class="text-headline-sm font-headline-sm font-bold text-primary">AI Software Architect</span>
+<header class="flex justify-between items-center w-full px-lg h-16 sticky top-0 z-50 bg-surface/80 backdrop-blur-md">
+<a class="flex items-center gap-2 group" href="/">
+<div class="w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">architecture</span>
 </div>
-<div class="hidden md:flex items-center gap-lg">
-<a class="text-primary font-bold border-b-2 border-primary font-label-md text-label-md py-1" href="#">Home</a>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Features</a>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Pricing</a>
-</div>
-<div class="flex items-center gap-md">
-<button class="flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors p-2 rounded-full active:scale-95 duration-200" id="theme-toggle">
-<span class="material-symbols-outlined" id="theme-icon">light_mode</span>
-</button>
-<div class="h-6 w-[1px] bg-outline-variant mx-1"></div>
-<div class="flex items-center gap-sm">
-    {% if user.is_authenticated %}
-        <div class="flex items-center space-x-2 text-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[20px]">person</span>
-            <span class="font-medium">{{ user.first_name|default:user.username }}</span>
-        </div>
-        <a href="{% url 'analyzer:dashboard' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Dashboard</a>
-    {% else %}
-        <a href="{% url 'analyzer:login' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Sign In</a>
-        <a href="{% url 'analyzer:signup' %}" class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</a>
-    {% endif %}
-</div>
-</div>
-</header>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Features</a>
-<a class="text-on-surface-variant hover:bg-surface-container-highest transition-colors font-label-md text-label-md py-1 px-2 rounded" href="#">Pricing</a>
-</div>
-<div class="flex items-center gap-md">
-<button class="flex items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-colors p-2 rounded-full active:scale-95 duration-200" id="theme-toggle">
-<span class="material-symbols-outlined" id="theme-icon">light_mode</span>
-</button>
-<div class="h-6 w-[1px] bg-outline-variant mx-1"></div>
-<div class="flex items-center gap-sm">
-    {% if user.is_authenticated %}
-        <div class="flex items-center space-x-2 text-sm text-on-surface-variant">
-            <span class="material-symbols-outlined text-[20px]">person</span>
-            <span class="font-medium">{{ user.first_name|default:user.username }}</span>
-        </div>
-        <a href="{% url 'analyzer:dashboard' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Dashboard</a>
-    {% else %}
-        <a href="{% url 'analyzer:login' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Sign In</a>
-        <a href="{% url 'analyzer:signup' %}" class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</a>
-    {% endif %}
-</div>
-</div>
+<span class="text-base font-bold text-primary">ArchAI</span>
+</a>
 </header>
 <!-- Main Content Area -->
 <main class="flex-grow flex items-center justify-center px-md py-xl">
