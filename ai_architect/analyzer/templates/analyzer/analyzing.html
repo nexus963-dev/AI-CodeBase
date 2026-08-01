@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Analysis in Progress - AI Software Architect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .progress-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .pulse-soft {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .7; }
+        }
+        .step-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#d9e3f6",
+                      "status-error": "#EF4444",
+                      "on-surface-variant": "#434655",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#eeefff",
+                      "primary": "#004ac6",
+                      "inverse-on-surface": "#eaf1ff",
+                      "on-secondary": "#ffffff",
+                      "surface": "$f8f9ff",
+                      "primary-fixed": "$dbe1ff",
+                      "surface-container-lowest": "$ffffff",
+                      "inverse-surface": "$27313f",
+                      "secondary-fixed": "$d8e2ff",
+                      "on-tertiary-fixed": "$360f00",
+                      "tertiary-fixed": "$ffdbcd",
+                      "surface-card": "$FFFFFF",
+                      "surface-container": "$e6eeff",
+                      "on-primary": "$ffffff",
+                      "on-tertiary-container": "$ffede6",
+                      "surface-container-high": "$dee9fc",
+                      "secondary-fixed-dim": "$adc6ff",
+                      "surface-dim": "$d0dbed",
+                      "surface-variant": "$d9e3f6",
+                      "text-muted": "$6B7280",
+                      "status-success": "$10B981",
+                      "error-container": "$ffdad6",
+                      "secondary-container": "$2170e4",
+                      "surface-tint": "$0053db",
+                      "on-primary-fixed-variant": "$003ea8",
+                      "tertiary-container": "$bc4800",
+                      "outline": "$737686",
+                      "outline-variant": "$c3c6d7",
+                      "primary-container": "$2563eb",
+                      "inverse-primary": "$b4c5ff",
+                      "status-warning": "$F59E0B",
+                      "primary-fixed-dim": "$b4c5ff",
+                      "text-secondary": "$374151",
+                      "tertiary-fixed-dim": "$ffb596",
+                      "on-background": "$121c2a",
+                      "secondary": "$0058be",
+                      "on-error-container": "$93000a",
+                      "text-primary": "$1F2937",
+                      "on-surface": "$121c2a",
+                      "surface-container-low": "$eff4ff",
+                      "on-secondary-fixed": "$001a42",
+                      "surface-bright": "$f8f9ff",
+                      "error": "$ba1a1a",
+                      "on-error": "$ffffff",
+                      "on-secondary-container": "$fefcff",
+                      "on-secondary-fixed-variant": "$004395",
+                      "on-primary-fixed": "$00174b",
+                      "surface-base": "$F9FAFB",
+                      "background": "$f8f9ff",
+                      "tertiary": "$943700",
+                      "on-tertiary-fixed-variant": "$7d2d00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "inspector-width": "300px",
+                      "max-content-width": "1440px",
+                      "md": "16px",
+                      "sidebar-width": "260px",
+                      "sm": "12px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "headline-sm": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "code-md": ["JetBrains Mono"],
+                      "label-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "code-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-md h-14 w-full bg-surface-container-low shadow-sm style_shell_layout">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">architecture</span>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">AI Software Architect</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-xs rounded-full hover:bg-surface-container-highest transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-highest transition-colors active:scale-95 duration-200 relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-status-error rounded-full border border-surface"></span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-fixed flex items-center justify-center border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a senior software engineer with short hair, wearing a navy blue tech vest, set against a blurred modern office background with soft blue and white ambient lighting in a premium corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgdFG1Q-QplmO5yjQWYCF4_8hz1cPe8KwgupaB1UwC5rDv_Gxm7VVsYry6XyuIg4r6qXzxdJ4gNF0q4qeoHkgyIIcPwoy2U9BGADYZzKxMfeE6VsNjTh7yRUVnpz55YuAqSArxfK28u1PyzVFdc_Y5HBtn282B67vUvewB_ayrDUf5B3AiHTuXjrBeZ4-56HIy6N3Jsk8jcLlEXE6XMV2TmejhlubinYpfu6Yd_Th2iR_ZbE6JcAG6"/>
+</div>
+</div>
+</header>
+<main class="flex h-[calc(100vh-3.5rem)] relative overflow-hidden">
+<!-- Side Navigation (Suppressed/Inactive during analysis) -->
+<aside class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-sidebar-width flex flex-col py-md border-r border-outline-variant bg-surface opacity-50 pointer-events-none hidden md:flex">
+<div class="px-md mb-lg">
+<div class="text-label-md font-label-md text-on-surface-variant uppercase tracking-wider mb-sm">Workspace</div>
+</div>
+<nav class="flex-1 px-base space-y-xs">
+<div class="flex items-center gap-md px-md py-sm text-on-surface-variant rounded-lg">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</div>
+<div class="flex items-center gap-md px-md py-sm bg-secondary-container text-on-secondary-container rounded-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+<span class="font-label-md text-label-md">My Projects</span>
+</div>
+</nav>
+</aside>
+<!-- Focused Analysis Screen -->
+<div class="flex-1 md:ml-sidebar-width flex items-center justify-center bg-surface-base p-lg">
+<!-- Bento-Style Modal Container -->
+<div class="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Main Processing Card (Left/Center) -->
+<div class="lg:col-span-8 bg-surface-card rounded-xl shadow-sm border border-outline-variant p-xl flex flex-col gap-xl relative overflow-hidden">
+<!-- Subtle background decoration -->
+<div class="absolute -top-16 -right-16 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="relative z-10 flex flex-col gap-md">
+<div class="flex items-center justify-between">
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight">Analyzing Repository</h1>
+<span id="status-badge" class="px-sm py-xs bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm rounded-full pulse-soft">In Progress</span>
+</div>
+<p class="text-on-surface-variant text-body-md max-w-lg" id="repo-name-display">
+                            We're mapping out the architecture of <code id="repo-name-code" class="bg-surface-container-high px-base py-xs rounded text-primary font-code-md">repository-name</code>. This process usually takes 2-5 minutes depending on repository size.
+                        </p>
+</div>
+<!-- Progress Bar Component -->
+<div class="space-y-sm">
+<div class="flex justify-between items-end mb-xs">
+<span class="text-label-md font-label-md text-on-surface-variant" id="current-stage-label">Initializing...</span>
+<span class="text-headline-sm font-bold text-primary" id="percent-label">0%</span>
+</div>
+<div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden border border-outline-variant/30">
+<div class="h-full bg-primary-container step-transition relative" id="main-progress-bar" style="width: 0%;">
+<div class="absolute inset-0 progress-shimmer"></div>
+</div>
+</div>
+</div>
+<!-- Step-by-Step Status List -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex items-center gap-md p-md rounded-xl bg-surface-container-low border border-outline-variant/50 step-transition" id="step-cloning">
+<div class="w-8 h-8 rounded-full bg-status-success/10 text-status-success flex items-center justify-center">
+<span class="material-symbols-outiled text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Cloning</span>
+<span class="label-sm text-sm text-status-success">Pending</span>
+</div>
+</div>
+<div class="flex items-center gap-md p-md rounded-xl bg-surface-container-low border border-outline-variant/50 step-transition" id="step-processing">
+<div class="w-8 h-8 rounded-full bg-status-success/10 text-status-success flex items-center justify-center">
+<span class="material-symbols-outiled text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Processing</span>
+<span class="label-sm text-sm text-status-success">Pending</span>
+</div>
+</div>
+<div class="flex items-center gap-md p-md rounded-xl bg-primary/5 border border-primary/20 step-transition ring-1 ring-primary/20" id="step-tokens">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+<span class="material-symbols-outiled text-[20px]">sync</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Building relationships</span>
+<span class="label-sm text-sm text-primary">Pending</span>
+</div>
+</div>
+<div class="flex items-center gap-md p-md rounded-xl bg-surface-container-lowest border border-outline-variant/30 step-transition" id="step-analysis">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outiled text-[20px]">insights</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Running analysis</span>
+<span class="label-sm text-sm text-on-surface-variant">Final optimization pass</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Insights/Log Panel (Right/Side) -->
+<div class="lg:col-span-4 flex flex-col gap-lg">
+<!-- Live Logs -->
+<div class="flex-1 bg-inverse-surface text-surface rounded-xl shadow-sm border border-outline-variant overflow-hidden flex flex-col">
+<div class="px-md py-sm border-b border-outline-variant/20 flex items-center gap-base">
+<span class="w-2 h-2 rounded-full bg-status-success pulse-soft"></span>
+<span class="font-code-md text-label-sm text-outline-variant uppercase tracking-widest">System Logs</span>
+</div>
+<div class="p-md font-code-md text-[13px] leading-relaxed flex-1 overflow-y-auto space-y-1" id="log-container">
+<div class="text-status-success">[INFO] Ready to start analysis...</div>
+</div>
+</div>
+<!-- Tip/AI Insight Card -->
+<div class="bg-secondary-container text-on-secondary-container p-lg rounded-xl shadow-sm border border-secondary relative overflow-hidden group">
+<div class="absolute -bottom-8 -right-8 w-32 h-32 opacity-10 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outiled text-[120px]">lightbulb</span>
+</div>
+<div class="flex items-start gap-md relative z-10">
+<span class="material-symbols-outiled" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<div class="space-y-xs">
+<h4 class="font-label-md text-label-md font-bold">Pro Tip</h4>
+<p class="text-label-sm font-label-sm leading-snug">Our AI recognizes patterns in microservices communication. It's currently identifying over 24 API endpoints in your codebase.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Configuration
+        const POLLING_INTERVAL = 3000; // 3 seconds
+        let pollingInterval = null;
+        const projectId = {{ project.id }}; // This will be replaced by Django template engine
+
+        // DOM Elements
+        const statusBadge = document.getElementById('status-badge');
+        const repoNameDisplay = document.getElementById('repo-name-display');
+        const repoNameCode = document.getElementById('repo-name-code');
+        const currentStageLabel = document.getElementById('current-stage-label');
+        const percentLabel = document.getElementById('percent-label');
+        const progressBar = document.getElementById('main-progress-bar');
+        const logContainer = document.getElementById('log-container');
+
+        // Step elements
+        const steps = {
+            cloning: document.getElementById('step-cloning'),
+            processing: document.getElementById('step-processing'),
+            tokens: document.getElementById('step-tokens'),
+            analysis: document.getElementById('step-analysis')
+        };
+
+        // Step labels mapping
+        const stepLabels = {
+            cloning: 'Cloning repository...',
+            processing: 'Processing source code...',
+            tokens: 'Building relationships...',
+            analysis: 'Running analysis...'
+        };
+
+        // Step icons mapping
+        const stepIcons = {
+            cloning: 'folder_open',
+            processing: 'cpu',
+            tokens: 'link',
+            analysis: 'insights'
+        };
+
+        // Initialize
+        function init() {
+            // Set repository name from project context
+            const repoName = "{{ project.name }}";
+            repoNameDisplay.textContent = `We're mapping out the architecture of ${repoName}. This process usually takes 2-5 minutes depending on repository size.`;
+            repoNameCode.textContent = repoName;
+
+            // Start polling for status updates
+            startPolling();
+        }
+
+        // Start polling for status updates
+        function startPolling() {
+            pollingInterval = setInterval(fetchStatus, POLLING_INTERVAL);
+            // Initial call
+            fetchStatus();
+        }
+
+        // Stop polling
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // Fetch status from backend
+        async function fetchStatus() {
+            try {
+                const response = await fetch(`/analyze/${projectId}/status/`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
+                updateUI(data);
+
+                // Stop polling if completed or failed
+                if (data.status === 'completed' || data.status === 'failed') {
+                    stopPolling();
+                    // Optionally redirect to dashboard after a delay
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 5000);
+                }
+            } catch (error) {
+                console.error('Error fetching status:', error);
+                addLogEntry('[ERROR] Failed to fetch status from server', 'text-error');
+            }
+        }
+
+        // Update UI with status data
+        function updateUI(data) {
+            const status = data.status;
+            const progress = data.progress || 0;
+            const logs = data.logs || [];
+
+            // Update status badge
+            if (status === 'completed') {
+                statusBadge.className = 'px-sm py-xs bg-status-success text-on-status-success text-label-sm font-label-sm rounded-full';
+                statusBadge.textContent = 'Completed';
+            } else if (status === 'failed') {
+                statusBadge.className = 'px-sm py-xs bg-status-error text-on-status-error text-label-sm font-label-sm rounded-full';
+                statusBadge.textContent = 'Failed';
+            } else if (status === 'running') {
+                statusBadge.className = 'px-sm py-xs bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm rounded-full pulse-soft';
+                statusBadge.textContent = 'In Progress';
+            } else {
+                statusBadge.className = 'px-sm py-xs bg-primary-fixed text-on-primary-fixed text-label-sm font-label-sm rounded-full';
+                statusBadge.textContent = 'Pending';
+            }
+
+            // Update progress
+            progressBar.style.width = `${progress}%`;
+            percentLabel.textContent = `${Math.round(progress)}%`;
+
+            // Update stage based on progress
+            let currentStage = 'initializing';
+            if (progress < 25) {
+                currentStage = 'cloning';
+            } else if (progress < 50) {
+                currentStage = 'processing';
+            } else if (progress < 75) {
+                currentStage = 'tokens';
+            } else {
+                currentStage = 'analysis';
+            }
+
+            currentStageLabel.textContent = stepLabels[currentStage] || 'Initializing...';
+            updateStepIndicators(currentStage);
+
+            // Add new log entries
+            logs.forEach(log => {
+                if (log && !logElementExists(log)) {
+                    addLogEntry(log, 'text-outline-variant');
+                }
+            });
+        }
+
+        // Check if log entry already exists (to avoid duplicates)
+        function logElementExists(logText) {
+            const existingLogs = logContainer.getElementsByTagName('div');
+            for (let log of existingLogs) {
+                if (log.textContent.trim() === logText.trim()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // Add log entry to the log container
+        function addLogEntry(text, className = 'text-outline-variant') {
+            const logElement = document.createElement('div');
+            logElement.className = className;
+            logElement.textContent = `[INFO] ${text}`;
+            logContainer.prepend(logElement);
+
+            // Limit number of log entries to prevent overflow
+            if (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        // Update step indicators based on current stage
+        function updateStepIndicators(currentStage) {
+            // Reset all steps
+            Object.keys(steps).forEach(stepKey => {
+                const step = steps[stepKey];
+                if (!step) return;
+
+                // Reset to default state
+                step.className = 'flex items-center gap-md p-md rounded-xl bg-surface-container-low border border-outline-variant/50 step-transition';
+
+                const iconContainer = step.querySelector('.w-8');
+                if (iconContainer) {
+                    iconContainer.className = 'w-8 h-8 rounded-full bg-surface-container-highest/10 text-surface-variant flex items-center justify-center';
+                    const icon = iconContainer.querySelector('.material-symbols-outiled');
+                    if (icon) {
+                        icon.textContent = getStepIcon(stepKey);
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                    }
+                }
+
+                const textContainer = step.querySelector('.flex-flex-col');
+                if (textContainer) {
+                    const statusText = textContainer.querySelector('.label-sm');
+                    const labelText = textContainer.querySelector('.font-label-md');
+                    if (statusText) {
+                        statusText.textContent = 'Pending';
+                        statusText.className = 'label-sm text-sm text-surface-variant';
+                    }
+                    if (labelText) {
+                        labelText.textContent = getStepLabel(stepKey);
+                        labelText.className = 'font-label-md text-label-md text-on-surface';
+                    }
+                }
+            });
+
+            // Highlight current step
+            if (steps[currentStage]) {
+                const currentStep = steps[currentStage];
+                currentStep.className = 'flex items-center gap-md p-md rounded-xl bg-primary/5 border border-primary/20 step-transition ring-1 ring-primary/20';
+
+                const iconContainer = currentStep.querySelector('.w-8');
+                if (iconContainer) {
+                    iconContainer.className = 'w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center pulse-soft';
+                    const icon = iconContainer.querySelector('.material-symbols-outiled');
+                    if (icon) {
+                        icon.textContent = getStepIcon(currentStage);
+                        icon.style.fontVariationSettings = "'FILL' 1";
+                        icon.classList.add('animate-spin');
+                    }
+                }
+
+                const textContainer = currentStep.querySelector('.flex-flex-col');
+                if (textContainer) {
+                    const statusText = textContainer.querySelector('.label-sm');
+                    const labelText = textContainer.querySelector('.font-label-md');
+                    if (statusText) {
+                        statusText.textContent = 'In Progress';
+                        statusText.className = 'label-sm text-sm text-primary';
+                    }
+                    if (labelText) {
+                        labelText.textContent = getStepLabel(currentStage);
+                        labelText.className = 'font-label-md text-label-md text-on-surface font-bold';
+                    }
+                }
+            }
+
+            // Mark previous steps as complete
+            const stepOrder = ['cloning', 'processing', 'tokens', 'analysis'];
+            const currentIndex = stepOrder.indexOf(currentStage);
+            if (currentIndex >= 0) {
+                for (let i = 0; i < currentIndex; i++) {
+                    const stepKey = stepOrder[i];
+                    if (steps[stepKey]) {
+                        markStepComplete(steps[stepKey]);
+                    }
+                }
+            }
+        }
+
+        // Mark a step as complete
+        function markStepComplete(stepElement) {
+            if (!stepElement) return;
+
+            stepElement.className = 'flex items-center gap-md p-md rounded-xl bg-surface-container-low border border-outline-variant/50 step-transition opacity-100';
+
+            const iconContainer = stepElement.querySelector('.w-8');
+            if (iconContainer) {
+                iconContainer.className = 'w-8 h-8 rounded-full bg-status-success/10 text-status-success flex items-center justify-center';
+                const icon = iconContainer.querySelector('.material-symbols-outiled');
+                if (icon) {
+                    icon.textContent = 'check_circle';
+                    icon.style.fontVariationSettings = "'FILL' 1";
+                }
+            }
+
+            const textContainer = stepElement.querySelector('.flex-flex-col');
+            if (textContainer) {
+                const statusText = textContainer.querySelector('.label-sm');
+                const labelText = textContainer.querySelector('.font-label-md');
+                if (statusText) {
+                    statusText.textContent = 'Completed';
+                    statusText.className = 'label-sm text-sm text-status-success';
+                }
+                if (labelText) {
+                    labelText.textContent = getStepLabelFromElement(stepElement);
+                    labelText.className = 'font-label-md text-label-md text-on-surface';
+                }
+            }
+        }
+
+        // Get step label from step key
+        function getStepLabel(stepKey) {
+            const labels = {
+                cloning: 'Cloning',
+                processing: 'Processing',
+                tokens: 'Building relationships',
+                analysis: 'Running analysis'
+            };
+            return labels[stepKey] || stepKey;
+        }
+
+        // Get step label from element (for completed steps)
+        function getStepLabelFromElement(stepElement) {
+            const labelElement = stepElement.querySelector('.font-label-md');
+            return labelElement ? labelElement.textContent : 'Unknown';
+        }
+
+        // Get step icon from step key
+        function getStepIcon(stepKey) {
+            const icons = {
+                cloning: 'folder_open',
+                processing: 'cpu',
+                tokens: 'link',
+                analysis: 'insights'
+            };
+            return icons[stepKey] || 'help';
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Clean up when page is unloaded
+        window.addEventListener('beforeunload', () => {
+            stopPolling();
+        });
+    </script>
+</body></html>

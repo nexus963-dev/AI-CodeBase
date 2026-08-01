@@ -1,0 +1,290 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Add New Project | AI Software Architect</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .input-focus-ring:focus-within {
+            ring: 2px;
+            ring-color: #3B82F6;
+            outline: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f8f9ff",
+                        "primary-fixed": "#dbe1ff",
+                        "outline": "#737686",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-primary-container": "#eeefff",
+                        "on-tertiary-fixed": "#360f00",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "text-secondary": "#374151",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-highest": "#d9e3f6",
+                        "on-tertiary-container": "#ffede6",
+                        "secondary": "#0058be",
+                        "inverse-surface": "#27313f",
+                        "surface-bright": "#f8f9ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "outline-variant": "#c3c6d7",
+                        "surface-card": "#FFFFFF",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#d9e3f6",
+                        "primary-container": "#2563eb",
+                        "on-surface": "#121c2a",
+                        "status-error": "#EF4444",
+                        "on-error": "#ffffff",
+                        "surface-container": "#e6eeff",
+                        "secondary-container": "#2170e4",
+                        "text-primary": "#1F2937",
+                        "tertiary-fixed": "#ffdbcd",
+                        "tertiary-container": "#bc4800",
+                        "status-success": "#10B981",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-secondary-fixed-variant": "#004395",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#004ac6",
+                        "on-secondary-container": "#fefcff",
+                        "surface-base": "#F9FAFB",
+                        "background": "#f8f9ff",
+                        "inverse-primary": "#b4c5ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "on-secondary": "#ffffff",
+                        "text-muted": "#6B7280",
+                        "on-surface-variant": "#434655",
+                        "tertiary": "#943700",
+                        "on-primary-fixed": "#00174b",
+                        "status-warning": "#F59E0B",
+                        "surface-dim": "#d0dbed",
+                        "on-secondary-fixed": "#001a42",
+                        "inverse-on-surface": "#eaf1ff",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-background": "#121c2a",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#dee9fc",
+                        "surface-tint": "#0053db"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "base": "8px",
+                        "inspector-width": "300px",
+                        "sm": "12px",
+                        "sidebar-width": "260px",
+                        "md": "16px",
+                        "max-content-width": "1440px",
+                        "xl": "32px",
+                        "lg": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "code-md": ["JetBrains Mono"],
+                        "label-sm": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "code-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface-base min-h-screen flex flex-col font-body-md text-on-surface antialiased">
+<!-- TopNavBar Implementation from JSON -->
+<header class="sticky top-0 z-50 flex items-center justify-between px-md h-14 w-full shadow-sm bg-surface-container-low dark:bg-surface-dim">
+<div class="flex items-center gap-base">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">architecture</span>
+<span class="text-headline-sm font-headline-sm font-bold text-primary dark:text-primary-fixed-dim">AI Software Architect</span>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex items-center gap-base">
+<!-- Navigation links would go here if provided in JSON -->
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-xs rounded-full hover:bg-surface-container-highest transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-xs rounded-full hover:bg-surface-container-highest transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+
+<span class="ml-xs font-label-md text-label-md text-on-surface-variant">Rohit</span>
+</div>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center p-md lg:p-xl relative overflow-hidden">
+<!-- Atmospheric Background Element -->
+<div class="absolute inset-0 pointer-events-none">
+
+</div>
+<!-- Add New Project Modal / Card -->
+<div class="relative w-full max-w-[600px] bg-surface-card rounded-xl shadow-lg border border-outline-variant overflow-hidden flex flex-col z-10">
+<!-- Header Section -->
+<div class="p-lg border-b border-outline-variant bg-surface-container-low/50">
+<h1 class="font-headline-md text-headline-md text-text-primary">Add New Project</h1>
+<p class="font-body-sm text-body-sm text-text-muted mt-xs">Connect your codebase to start the architectural analysis.</p>
+</div>
+<!-- Form Body -->
+<div class="p-lg space-y-xl">
+<!-- Project Name Field -->
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface-variant block" for="project-name">Project Name</label>
+<input class="w-full h-10 px-md rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted" id="project-name" name="project-name" placeholder="e.g. cloud-native-orchestrator" type="text">
+</div>
+<!-- GitHub URL Field -->
+<div class="space-y-base">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface-variant" for="repo-url">GitHub Repository URL</label>
+<span class="inline-flex items-center gap-xs text-status-success font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">public</span>
+                            Public only
+                        </span>
+</div>
+<div class="relative flex items-center">
+<div class="absolute left-md pointer-events-none flex items-center">
+<img alt="GitHub Logo" class="w-5 h-5 opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3ETpQ-j-ttqKLVpw5eVOwcYjqs4vt1LiEF2O9KDHOXJUFJDg7zjgKE6qB3_550LN8hDjjaTCwuS2sVKYSnVB5JTApxT4zEsThsroE6N5zAW2YgmkfJe4A3Tbjso4tUbHwjF7DyaL53pA_YQf347qwfBKNUl8u3igfmJX7PWoFdkLiv159ffZ4G-yGQum7coA1H6ZiN_vNJMfPZS6TqEJCgVCJvaNhVJQXnrG5G0L1EaKoaT2YacAP">
+</div>
+<input class="w-full h-10 pl-11 pr-md rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted" id="repo-url" name="repo-url" placeholder="https://github.com/username/repository" type="url">
+</div>
+<p class="font-body-sm text-body-sm text-text-muted italic flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                        Public repositories only. Private repo support coming soon.
+                    </p>
+</div>
+<!-- Branch Selector (Optional) -->
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface-variant block" for="branch">Branch <span class="text-text-muted font-normal">(Optional)</span></label>
+<div class="relative">
+<select class="w-full h-10 px-md pr-10 rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none" id="branch" name="branch">
+<option value="main">main</option>
+<option value="master">master</option>
+<option value="develop">develop</option>
+</select>
+<div class="absolute right-md top-1/2 -translate-y-1/2 pointer-events-none">
+<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Actions -->
+<div class="p-lg bg-surface-container-lowest border-t border-outline-variant flex items-center justify-end gap-md">
+<button class="px-lg h-11 rounded-xl font-label-md text-label-md text-text-secondary hover:bg-surface-container-high active:scale-95 transition-all">
+                    Cancel
+                </button>
+<button class="px-lg h-11 bg-primary text-on-primary rounded-xl font-label-md text-label-md shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale disabled:scale-100 flex items-center gap-base" disabled="" id="analyze-btn">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+                    Analyze Repository
+                </button>
+</div>
+</div>
+<!-- Tech Illustration Sidebar Pattern (Bento Hint) -->
+<div class="hidden lg:flex flex-col gap-lg absolute right-xl top-1/2 -translate-y-1/2 w-sidebar-width opacity-40 hover:opacity-100 transition-opacity duration-500">
+<div class="p-md rounded-xl bg-surface-card border border-outline-variant shadow-sm rotate-3">
+<div class="w-full aspect-video rounded-lg bg-surface-container mb-sm overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A clean, minimalist 3D rendering of software architecture diagram with glowing blue nodes and translucent connecting lines. The background is a soft gradient of light blues and whites, echoing the analytical and authoritative brand personality of the AI Software Architect tool." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxjst4eSEG8rqbRbbob9V5glj6GXveq7Qd8fnC_Oq1jrnAjg8uOsPUSmGbj9FHGh5dX7wRXrq7bZ11GpF9SBx_YLTjPn6jmhKfB5CGP2bzrr0X9pkVGgRsAgUZHAyrutmecAczKg3DbdIyeqmNn2_W5H1Rpc6uARbGyaYYHmES7_4moLh9_3yFlu7cv6OQBfbpZ5Q6bR87M5d82JvlMiL6JHMLxUBY5-Qlpj6Zc4uU2ddLydlyky3i">
+</div>
+<div class="h-2 w-3/4 bg-outline-variant rounded-full mb-xs"></div>
+<div class="h-2 w-1/2 bg-outline-variant rounded-full opacity-50"></div>
+</div>
+<div class="p-md rounded-xl bg-surface-card border border-outline-variant shadow-sm -rotate-2">
+<div class="flex items-center gap-sm mb-sm">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+</div>
+<div>
+<div class="h-2 w-24 bg-outline-variant rounded-full mb-xs"></div>
+<div class="h-2 w-16 bg-outline-variant rounded-full"></div>
+</div>
+</div>
+<div class="space-y-xs">
+<div class="h-2 w-full bg-outline-variant rounded-full opacity-30"></div>
+<div class="h-2 w-full bg-outline-variant rounded-full opacity-30"></div>
+<div class="h-2 w-2/3 bg-outline-variant rounded-full opacity-30"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- SideNavBar (Hidden by default for focused linear task as per mandate) -->
+<!-- Suppression Logic: Since this is an "Add Project" linear journey, SideNavBar is omitted for focus -->
+<script>
+        // Form validation logic for enabling/disabling submit button
+        const projectNameInput = document.getElementById('project-name');
+        const repoInput = document.getElementById('repo-url');
+        const analyzeBtn = document.getElementById('analyze-btn');
+
+        function validateForm() {
+            const projectName = projectNameInput.value.trim();
+            const repoUrl = repoInput.value.trim();
+
+            // Enable button only if both required fields are non-empty
+            if (projectName.length > 0 && repoUrl.length > 0) {
+                analyzeBtn.disabled = false;
+                analyzeBtn.classList.remove('opacity-50', 'grayscale');
+            } else {
+                analyzeBtn.disabled = true;
+                analyzeBtn.classList.add('opacity-50', 'grayscale');
+            }
+        }
+
+        // Add input event listeners to both required fields
+        projectNameInput.addEventListener('input', validateForm);
+        repoInput.addEventListener('input', validateForm);
+
+        // Add micro-interaction to form inputs
+        const inputs = document.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.classList.add('scale-[1.01]');
+                input.parentElement.style.transition = 'transform 0.2s ease-out';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.classList.remove('scale-[1.01]');
+            });
+        });
+    </script>
+
+
+</body></html>

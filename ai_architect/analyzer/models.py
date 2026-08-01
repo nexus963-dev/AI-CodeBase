@@ -65,6 +65,10 @@ class AnalysisJob(models.Model):
     classes_found = models.IntegerField(default=0)
     methods_found = models.IntegerField(default=0)
     relationships_found = models.IntegerField(default=0)
+    # Progress tracking (0-100)
+    progress = models.IntegerField(default=0)
+    # Logs
+    logs = models.TextField(blank=True, null=True)
     # Timing
     started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
@@ -103,7 +107,7 @@ class CodeEntity(models.Model):
         ('class', 'Class'),
         ('method', 'Method'),
     ]
-    
+
     # We'll link to File via path or foreign key if we manage the relationship
     file_path = models.CharField(max_length=500)  # Could be FK to File if we managed it
     name = models.CharField(max_length=200)
