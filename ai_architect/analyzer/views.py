@@ -182,10 +182,26 @@ def add_project(request):
         # Description is optional, no validation needed
 
         if is_valid:
-            # Validation successful
-            print("Validation Successful")
-            # Note: Not saving to database, not redirecting, not calling parser, not starting threads
-            # Just re-render the form
+            # Validation successful - save to database
+            try:
+                project = Project(
+                    name=project_name,
+                    description=description,
+                    github_url=repo_url,
+                    owner=request.user,
+                    is_private=False,  # Assuming public repos only for now
+                    analysis_status='pending'  # Set to pending as requested
+                )
+                project.save()
+                print("Project successfully created")
+                # Note: Not redirecting, not calling parser, not starting threads
+                # Just re-render the form to allow adding another project
+            except Exception as e:
+                # If database saving fails, show error message
+                messages.error(request, f"Failed to save project: {str(e)}")
+                # Log the error for debugging
+                print(f"Error saving project: {str(e)}")
+            # Re-render the form (whether save succeeded or failed)
             return render(request, 'analyzer/add_project.html')
         else:
             # Validation failed - re-render form with messages
