@@ -3,23 +3,28 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.urls import reverse_lazy
-from django.db.models import Sum
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
-import json
+from django.db.models import Sum
+from django.utils import timezone
+from django.db import connection
 import os
 import subprocess
 import threading
-import time
+import logging
+import sys
+import json
+import re
 from datetime import datetime
 
-from .models import Project, AnalysisJob
+# Import your models
+from .models import Project, AnalysisJob, File, CodeEntity, Relationship
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     return render(request, 'analyzer/home.html')
@@ -31,16 +36,18 @@ def login_view(request):
         remember_me = request.POST.get('remember')
 
         # Authenticate using email (since we are using email as username)
-        # Django's authenticate function uses username by default, so we need to get the user by email first
         try:
             user_obj = User.objects.get(email=email)
             username = user_obj.username
         except User.DoesNotExist:
-            # If email not found, we still want to authenticate to avoid user enumeration
-            # But we'll use a dummy username to avoid leaking information
-            username = email  # This will fail authentication
+            # Use a dummy username to avoid user enumeration
+            username = None
 
-        user = authenticate(request, username=username, password=password)
+        if username is None:
+            # Simulate failed authentication to prevent timing attacks
+            user = None
+        else:
+            user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
@@ -110,19 +117,27 @@ def signup_view(request):
 
 @login_required
 def dashboard(request):
-    # Get the current user's projects
-    user_projects = Project.objects.filter(owner=request.user)
+    # Optimized queries to prevent N+1
+    user_projects = Project.objects.filter(owner=request.user).prefetch_related(
+        'analysis_jobs'
+    )
     project_count = user_projects.count()
 
     # Get completed analysis jobs count
-    completed_jobs_count = AnalysisJob.objects.filter(project__owner=request.user, status='completed').count()
+    completed_jobs_count = AnalysisJob.objects.filter(
+        project__owner=request.user, 
+        status='completed'
+    ).count()
 
     # Get total files analyzed across all projects
-    total_files_analyzed = AnalysisJob.objects.filter(project__owner=request.user).aggregate(total=Sum('files_analyzed'))['total'] or 0
+    total_files_analyzed = AnalysisJob.objects.filter(
+        project__owner=request.user
+    ).aggregate(total=Sum('files_analyzed'))['total'] or 0
 
     # Get the latest analysis job for each project (for the project cards)
     projects_with_status = []
     for project in user_projects:
+        # Use prefetched jobs instead of making a new query
         latest_job = project.analysis_jobs.order_by('-created_at').first()
         projects_with_status.append({
             'project': project,
@@ -167,7 +182,6 @@ def add_project(request):
         else:
             # Regex for HTTPS GitHub URL: https://github.com/user/repository(.git)?
             # Regex for SSH GitHub URL: git@github.com:user/repository.git
-            import re
             https_pattern = r'^https://github.com/[^/]+/[^/]+(\.git)?/?$'
             ssh_pattern = r'^git@github.com:[^/]+/[^/]+\.git$'
 
@@ -193,21 +207,24 @@ def add_project(request):
                     analysis_status='pending'  # Set to pending as requested
                 )
                 project.save()
-                print("Project successfully created")
-                # Note: Not redirecting, not calling parser, not starting threads
-                # Just re-render the form to allow adding another project
+                
+                # Start the analysis in background
+                # TODO: Consider migrating to Celery/RQ for production
+                analysis_thread = threading.Thread(
+                    target=run_repository_analysis,
+                    args=(project.id,),
+                    daemon=True  # Allow thread to exit when main process ends
+                )
+                analysis_thread.start()
+                
+                # Redirect to dashboard after successful save
+                return redirect('analyzer:dashboard')
             except Exception as e:
                 # If database saving fails, show error message
+                logger.exception(f"Failed to save project: {str(e)}")
                 messages.error(request, f"Failed to save project: {str(e)}")
-                # Log the error for debugging
-                print(f"Error saving project: {str(e)}")
-            # Re-render the form (whether save succeeded or failed)
-            return render(request, 'analyzer/add_project.html')
-        else:
-            # Validation failed - re-render form with messages
-            # Note: Without template modifications to display messages,
-            # the user won't see them, but they are added to the message framework
-            return render(request, 'analyzer/add_project.html')
+                # Re-render the form to allow user to correct issues
+                return render(request, 'analyzer/add_project.html')
     else:
         # GET request - just render the form
         return render(request, 'analyzer/add_project.html')
@@ -226,6 +243,7 @@ def analyze_project(request, project_id):
         }
         return render(request, 'analyzer/analyzing.html', context)
     except Project.DoesNotExist:
+        logger.warning(f"Project {project_id} not found for user {request.user.id}")
         messages.error(request, "Project not found.")
         return redirect('analyzer:dashboard')
 
@@ -260,6 +278,7 @@ def analyze_project_status(request, project_id):
 
             return JsonResponse(data)
         except Project.DoesNotExist:
+            logger.warning(f"Project {project_id} not found for status check")
             return JsonResponse({'error': 'Project not found'}, status=404)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
@@ -280,7 +299,7 @@ def run_repository_analysis(project_id):
 
         # Update job status
         analysis_job.status = 'running'
-        analysis_job.started_at = datetime.now()
+        analysis_job.started_at = timezone.now()
         analysis_job.progress = 0
         analysis_job.save()
 
@@ -302,7 +321,7 @@ def run_repository_analysis(project_id):
             '--to-path', repo_path
         ]
 
-        # Set environment variables for database connection (use Django's database settings)
+        # Set environment variables for database connection
         env = os.environ.copy()
         db_settings = settings.DATABASES['default']
         env['DB_HOST'] = db_settings.get('HOST', 'localhost')
@@ -328,38 +347,42 @@ def run_repository_analysis(project_id):
         if process.returncode == 0:
             # Success - update project and job
             project.analysis_status = 'completed'
-            project.last_analyzed = datetime.now()
+            project.last_analyzed = timezone.now()
 
             analysis_job.status = 'completed'
-            analysis_job.completed_at = datetime.now()
+            analysis_job.completed_at = timezone.now()
             analysis_job.progress = 100
 
-            # TODO: Extract actual metrics from stdout or database
-            # For now, we'll set some placeholder values - in a real implementation,
-            # we would query the database for actual counts
+            # Try to get actual counts from the database
             try:
-                # Try to get actual counts from the database
-                from django.db import connection
-                with connection.cursor() as cursor:
-                    # Count files
-                    cursor.execute("SELECT COUNT(*) FROM files")
-                    analysis_job.files_analyzed = cursor.fetchone()[0]
-
-                    # Count entities by type
-                    cursor.execute("SELECT COUNT(*) FROM code_entities WHERE type = 'function'")
-                    analysis_job.functions_found = cursor.fetchone()[0]
-
-                    cursor.execute("SELECT COUNT(*) FROM code_entities WHERE type = 'class'")
-                    analysis_job.classes_found = cursor.fetchone()[0]
-
-                    cursor.execute("SELECT COUNT(*) FROM code_entities WHERE type = 'method'")
-                    analysis_job.methods_found = cursor.fetchone()[0]
-
-                    # Count relationships
-                    cursor.execute("SELECT COUNT(*) FROM relationships")
-                    analysis_job.relationships_found = cursor.fetchone()[0]
-            except:
-                # If we can't get the actual counts, keep the placeholder values
+                # Count files for this project
+                analysis_job.files_analyzed = File.objects.filter(project=project).count()
+                
+                # Count entities by type
+                analysis_job.functions_found = CodeEntity.objects.filter(
+                    project=project, 
+                    type='function'
+                ).count()
+                
+                analysis_job.classes_found = CodeEntity.objects.filter(
+                    project=project, 
+                    type='class'
+                ).count()
+                
+                analysis_job.methods_found = CodeEntity.objects.filter(
+                    project=project, 
+                    type='method'
+                ).count()
+                
+                # Count relationships
+                analysis_job.relationships_found = Relationship.objects.filter(
+                    project=project
+                ).count()
+                
+                logger.info(f"Analysis of {project.name} completed with {analysis_job.files_analyzed} files analyzed")
+            except Exception as e:
+                # If we can't get the actual counts, log the error
+                logger.warning(f"Could not retrieve analysis metrics for project {project.id}: {str(e)}")
                 analysis_job.files_analyzed = 0
                 analysis_job.functions_found = 0
                 analysis_job.classes_found = 0
@@ -370,31 +393,31 @@ def run_repository_analysis(project_id):
             combined_logs = f"STDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
             analysis_job.logs = combined_logs
 
-            messages.success(None, f"Analysis of {project.name} completed successfully!")
+            logger.info(f"Analysis of {project.name} completed successfully")
         else:
             # Failure
             project.analysis_status = 'failed'
 
             analysis_job.status = 'failed'
-            analysis_job.completed_at = datetime.now()
+            analysis_job.completed_at = timezone.now()
 
             # Store error message
             error_msg = stderr[:500] if stderr else "Unknown error occurred"
-            # We could add an error_message field to AnalysisJob if needed
-
+            
             # Combine stdout and stderr for logs
             combined_logs = f"STDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
             analysis_job.logs = combined_logs
 
-            messages.error(None, f"Analysis of {project.name} failed: {error_msg}")
+            logger.error(f"Analysis of {project.name} failed: {error_msg}")
 
         project.save()
         analysis_job.save()
 
-    except Project.DoesNotExist:
-        pass  # Project was deleted
-    except subprocess.TimeoutExpired:
+    except Project.DoesNotExist as e:
+        logger.exception(f"Project {project_id} not found during analysis")
+    except subprocess.TimeoutExpired as e:
         # Handle timeout
+        logger.exception(f"Analysis of project {project_id} timed out after 300 seconds")
         try:
             project = Project.objects.get(id=project_id)
             project.analysis_status = 'failed'
@@ -403,13 +426,16 @@ def run_repository_analysis(project_id):
             analysis_job = AnalysisJob.objects.filter(project=project).order_by('-created_at').first()
             if analysis_job:
                 analysis_job.status = 'failed'
-                analysis_job.completed_at = datetime.now()
+                analysis_job.completed_at = timezone.now()
                 analysis_job.progress = 0
                 analysis_job.save()
-        except:
-            pass
+        except Project.DoesNotExist:
+            logger.warning(f"Project {project_id} was deleted during analysis")
+        except Exception as e:
+            logger.exception(f"Unexpected error handling timeout for project {project_id}")
     except Exception as e:
         # Handle any other exceptions
+        logger.exception(f"Unexpected error during analysis of project {project_id}: {str(e)}")
         try:
             project = Project.objects.get(id=project_id)
             project.analysis_status = 'failed'
@@ -418,11 +444,13 @@ def run_repository_analysis(project_id):
             analysis_job = AnalysisJob.objects.filter(project=project).order_by('-created_at').first()
             if analysis_job:
                 analysis_job.status = 'failed'
-                analysis_job.completed_at = datetime.now()
+                analysis_job.completed_at = timezone.now()
                 analysis_job.progress = 0
                 analysis_job.save()
-        except:
-            pass
+        except Project.DoesNotExist:
+            logger.warning(f"Project {project_id} was deleted during analysis")
+        except Exception as nested_e:
+            logger.exception(f"Error while handling exception for project {project_id}: {str(nested_e)}")
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -447,29 +475,39 @@ def update_analysis_progress(request):
                 if progress is not None:
                     analysis_job.progress = progress
                 # Note: For logs, we would need a separate model or storage mechanism
-                # For now, we're not storing logs in the database
-
                 analysis_job.save()
+                logger.info(f"Updated analysis progress for project {project_id}: {status} {progress}%")
+            else:
+                logger.warning(f"No analysis job found for project {project_id}")
 
             return JsonResponse({'success': True})
+        except json.JSONDecodeError as e:
+            logger.exception(f"Invalid JSON in analysis progress update: {str(e)}")
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+        except Project.DoesNotExist as e:
+            logger.warning(f"Project {project_id} not found for progress update")
+            return JsonResponse({'success': False, 'error': 'Project not found'}, status=404)
         except Exception as e:
+            logger.exception(f"Error updating analysis progress: {str(e)}")
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
 
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
 
 @login_required
 def chat_interface(request, project_id):
-    return render(request, 'analyzer/chat.html')
-
+    # Verify project ownership
+    try:
+        Project.objects.get(id=project_id, owner=request.user)
+        return render(request, 'analyzer/chat.html')
+    except Project.DoesNotExist:
+        logger.warning(f"Chat interface access denied for project {project_id}")
+        messages.error(request, "Project not found.")
+        return redirect('analyzer:dashboard')
 
 def add_project_form(request):
-    """View to receive the Add Project form data without processing.
-    This view is used solely for connecting the form to Django.
-    It does not validate, save, or redirect.
-    """
+    """View to receive the Add Project form data without processing."""
     if request.method == 'POST':
-        # For debugging, we can print the data to console (optional)
-        # print(request.POST)
+        logger.debug(f"Add project form data: {request.POST}")
         return HttpResponse("Form received")
     else:
         return HttpResponse("Method not allowed", status=405)

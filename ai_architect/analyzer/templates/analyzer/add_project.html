@@ -168,57 +168,60 @@
 <p class="font-body-sm text-body-sm text-text-muted mt-xs">Connect your codebase to start the architectural analysis.</p>
 </div>
 <!-- Form Body -->
-<div class="p-lg space-y-xl">
-<!-- Project Name Field -->
-<div class="space-y-base">
-<label class="font-label-md text-label-md text-on-surface-variant block" for="project-name">Project Name</label>
-<input class="w-full h-10 px-md rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted" id="project-name" name="project-name" placeholder="e.g. cloud-native-orchestrator" type="text">
-</div>
-<!-- GitHub URL Field -->
-<div class="space-y-base">
-<div class="flex items-center justify-between">
-<label class="font-label-md text-label-md text-on-surface-variant" for="repo-url">GitHub Repository URL</label>
-<span class="inline-flex items-center gap-xs text-status-success font-label-sm text-label-sm">
-<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">public</span>
+<form method="post" action="{% url 'analyzer:add_project' %}" class="w-full">
+    {% csrf_token %}
+    <div class="p-lg space-y-xl">
+    <!-- Project Name Field -->
+    <div class="space-y-base">
+    <label class="font-label-md text-label-md text-on-surface-variant block" for="project-name">Project Name</label>
+    <input class="w-full h-10 px-md rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted" id="project-name" name="project-name" placeholder="e.g. cloud-native-orchestrator" type="text">
+    </div>
+    <!-- GitHub URL Field -->
+    <div class="space-y-base">
+    <div class="flex items-center justify-between">
+    <label class="font-label-md text-label-md text-on-surface-variant" for="repo-url">GitHub Repository URL</label>
+    <span class="inline-flex items-center gap-xs text-status-success font-label-sm text-label-sm">
+    <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">public</span>
                             Public only
                         </span>
-</div>
-<div class="relative flex items-center">
-<div class="absolute left-md pointer-events-none flex items-center">
-<img alt="GitHub Logo" class="w-5 h-5 opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3ETpQ-j-ttqKLVpw5eVOwcYjqs4vt1LiEF2O9KDHOXJUFJDg7zjgKE6qB3_550LN8hDjjaTCwuS2sVKYSnVB5JTApxT4zEsThsroE6N5zAW2YgmkfJe4A3Tbjso4tUbHwjF7DyaL53pA_YQf347qwfBKNUl8u3igfmJX7PWoFdkLiv159ffZ4G-yGQum7coA1H6ZiN_vNJMfPZS6TqEJCgVCJvaNhVJQXnrG5G0L1EaKoaT2YacAP">
-</div>
-<input class="w-full h-10 pl-11 pr-md rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted" id="repo-url" name="repo-url" placeholder="https://github.com/username/repository" type="url">
-</div>
-<p class="font-body-sm text-body-sm text-text-muted italic flex items-center gap-xs">
-<span class="material-symbols-outlined text-[18px]">info</span>
+    </div>
+    <div class="relative flex items-center">
+    <div class="absolute left-md pointer-events-none flex items-center">
+    <img alt="GitHub Logo" class="w-5 h-5 opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3ETpQ-j-ttqKLVpw5eVOwcYjqs4vt1LiEF2O9KDHOXJUFJDg7zjgKE6qB3_550LN8hDjjaTCwuS2sVKYSnVB5JTApxT4zEsThsroE6N5zAW2YgmkfJe4A3Tbjso4tUbHwjF7DyaL53pA_YQf347qwfBKNUl8u3igfmJX7PWoFdkLiv159ffZ4G-yGQum7coA1H6ZiN_vNJMfPZS6TqEJCgVCJvaNhVJQXnrG5G0L1EaKoaT2YacAP">
+    </div>
+    <input class="w-full h-10 pl-11 pr-md rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-text-muted" id="repo-url" name="repo-url" placeholder="https://github.com/username/repository" type="url">
+    </div>
+    <p class="font-body-sm text-body-sm text-text-muted italic flex items-center gap-xs">
+    <span class="material-symbols-outlined text-[18px]">info</span>
                         Public repositories only. Private repo support coming soon.
                     </p>
-</div>
-<!-- Branch Selector (Optional) -->
-<div class="space-y-base">
-<label class="font-label-md text-label-md text-on-surface-variant block" for="branch">Branch <span class="text-text-muted font-normal">(Optional)</span></label>
-<div class="relative">
-<select class="w-full h-10 px-md pr-10 rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none" id="branch" name="branch">
-<option value="main">main</option>
-<option value="master">master</option>
-<option value="develop">develop</option>
-</select>
-<div class="absolute right-md top-1/2 -translate-y-1/2 pointer-events-none">
-<span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Footer Actions -->
-<div class="p-lg bg-surface-container-lowest border-t border-outline-variant flex items-center justify-end gap-md">
-<button class="px-lg h-11 rounded-xl font-label-md text-label-md text-text-secondary hover:bg-surface-container-high active:scale-95 transition-all">
+    </div>
+    <!-- Branch Selector (Optional) -->
+    <div class="space-y-base">
+    <label class="font-label-md text-label-md text-on-surface-variant block" for="branch">Branch <span class="text-text-muted font-normal">(Optional)</span></label>
+    <div class="relative">
+    <select class="w-full h-10 px-md pr-10 rounded-xl border border-outline bg-surface-container-lowest font-body-md text-body-md focus:ring-2 focus:ring-primary focus:border-primary transition-all appearance-none" id="branch" name="branch">
+    <option value="main">main</option>
+    <option value="master">master</option>
+    <option value="develop">develop</option>
+    </select>
+    <div class="absolute right-md top-1/2 -translate-y-1/2 pointer-events-none">
+    <span class="material-symbols-outlined text-on-surface-variant">expand_more</span>
+    </div>
+    </div>
+    </div>
+    </div>
+    <!-- Footer Actions -->
+    <div class="p-lg bg-surface-container-lowest border-t border-outline-variant flex items-center justify-end gap-md">
+    <button class="px-lg h-11 rounded-xl font-label-md text-label-md text-text-secondary hover:bg-surface-container-high active:scale-95 transition-all" type="button">
                     Cancel
                 </button>
-<button class="px-lg h-11 bg-primary text-on-primary rounded-xl font-label-md text-label-md shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale disabled:scale-100 flex items-center gap-base" disabled="" id="analyze-btn">
-<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
+    <button class="px-lg h-11 bg-primary text-on-primary rounded-xl font-label-md text-label-md shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale disabled:scale-100 flex items-center gap-base" disabled="" id="analyze-btn" type="submit">
+    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
                     Analyze Repository
                 </button>
-</div>
+    </div>
+</form>
 </div>
 <!-- Tech Illustration Sidebar Pattern (Bento Hint) -->
 <div class="hidden lg:flex flex-col gap-lg absolute right-xl top-1/2 -translate-y-1/2 w-sidebar-width opacity-40 hover:opacity-100 transition-opacity duration-500">
