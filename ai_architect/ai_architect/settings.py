@@ -158,3 +158,29 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
 # CSRF settings
 # Use cookie-based CSRF protection instead of session-based
 CSRF_USE_SESSIONS = False
+
+# Logging
+# Route the 'analyzer' logger (views.py STEP logs, etc.) to the console at INFO
+# level so the background worker's [STEP n] output is visible in the terminal.
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+        },
+    },
+    'loggers': {
+        'analyzer': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

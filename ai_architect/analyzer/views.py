@@ -5,26 +5,35 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.db.models import Sum
 from django.utils import timezone
-from django.db import connection
-import os
-import subprocess
+from django.conf import settings
+from pathlib import Path
 import threading
 import logging
-import sys
 import json
 import re
-from datetime import datetime
+import shutil
+import subprocess
+import sys
+import time
 
 # Import your models
-from .models import Project, AnalysisJob, File, CodeEntity, Relationship
+from .models import Project, AnalysisJob
+
+# Lightweight adapter that links the parser's (global) PostgreSQL output to
+# this app's Project / AnalysisJob / User records. It is the ONLY integration
+# point with the parser output; the parser itself is never modified.
+from . import parser_adapter
 
 logger = logging.getLogger(__name__)
+
+
+class CloneError(Exception):
+    """Raised when `git clone` fails (non-zero exit, timeout, or missing git)."""
 
 def home(request):
     return render(request, 'analyzer/home.html')
@@ -207,16 +216,30 @@ def add_project(request):
                     analysis_status='pending'  # Set to pending as requested
                 )
                 project.save()
-                
-                # Start the analysis in background
-                # TODO: Consider migrating to Celery/RQ for production
+
+                logger.info("[STEP 1] Analysis requested")
+
+                # Create the analysis job synchronously so the dashboard
+                # immediately shows the pending state before the background
+                # worker picks it up.
+                analysis_job = AnalysisJob.objects.create(
+                    project=project,
+                    status='pending'
+                )
+                logger.info("Analysis Job created (id=%s)", analysis_job.id)
+
+                # Start the background worker.
+                # NOTE: For development this is a daemon thread. When moving to
+                # production, this is the single seam to replace with Celery/RQ:
+                #   run_repository_analysis.delay(analysis_job.id)
                 analysis_thread = threading.Thread(
                     target=run_repository_analysis,
-                    args=(project.id,),
+                    args=(analysis_job.id,),
                     daemon=True  # Allow thread to exit when main process ends
                 )
                 analysis_thread.start()
-                
+                logger.info("Background thread started")
+
                 # Redirect to dashboard after successful save
                 return redirect('analyzer:dashboard')
             except Exception as e:
@@ -300,174 +323,195 @@ def delete_project(request, project_id):
         messages.error(request, "Project not found.")
     return redirect('analyzer:dashboard')
 
-def run_repository_analysis(project_id):
-    """Background function to run the repository analysis pipeline"""
+def _mark_job_failed(analysis_job_id, message):
+    """Mark an AnalysisJob and its project as failed with a log message."""
     try:
-        project = Project.objects.get(id=project_id)
-
-        # Update project status to analyzing
-        project.analysis_status = 'analyzing'
-        project.save()
-
-        # Get or create analysis job
-        analysis_job = project.analysis_jobs.order_by('-created_at').first()
-        if not analysis_job:
-            analysis_job = AnalysisJob.objects.create(project=project)
-
-        # Update job status
-        analysis_job.status = 'running'
-        analysis_job.started_at = timezone.now()
+        analysis_job = AnalysisJob.objects.get(id=analysis_job_id)
+        analysis_job.status = 'failed'
+        analysis_job.completed_at = timezone.now()
         analysis_job.progress = 0
+        analysis_job.logs = message
         analysis_job.save()
 
-        # Prepare parameters for repo_parser.py
-        repo_url = project.github_url
-        # Extract repo name from URL for directory name
-        repo_name = repo_url.split('/')[-1].replace('.git', '')
-        # Use media directory for storing repositories
-        repo_path = os.path.join(settings.MEDIA_ROOT, 'repos', repo_name)
+        project = analysis_job.project
+        project.analysis_status = 'failed'
+        project.save()
+    except Exception:
+        logger.exception(f"Error while marking job {analysis_job_id} as failed")
 
-        # Ensure media directory exists
-        os.makedirs(os.path.join(settings.MEDIA_ROOT, 'repos'), exist_ok=True)
 
-        # Build command to run repo_parser.py
-        # repo_parser.py lives at the repo root, one level above settings.BASE_DIR
-        # Use the same interpreter running Django so the parser has access to
-        # the same installed packages (pygit2, tree-sitter, psycopg2).
-        cmd = [
-            sys.executable,
-            os.path.join(settings.BASE_DIR.parent, 'repo_parser.py'),
-            '--repo-url', repo_url,
-            '--to-path', repo_path
-        ]
+def run_repository_analysis(analysis_job_id):
+    """Background worker: clone the repository, then run the existing parser.
 
-        # Set environment variables for database connection
-        env = os.environ.copy()
-        db_settings = settings.DATABASES['default']
-        env['DB_HOST'] = db_settings.get('HOST', 'localhost')
-        env['DB_NAME'] = db_settings.get('NAME', 'postgres')
-        env['DB_USER'] = db_settings.get('USER', 'postgres')
-        env['DB_PASSWORD'] = db_settings.get('PASSWORD', 'postgres')
-        env['DB_PORT'] = str(db_settings.get('PORT', 5432))
+    Pipeline: pending -> cloning -> processing -> completed/failed.
 
-        # Run the process
-        process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+    After a successful `git clone` into media/repos/<project_id>/, the
+    existing parser (repo_parser.py) is invoked through its intended entry
+    point for an already-local repository:
+
+        python repo_parser.py --repo-path <clone_dir>
+
+    The parser is reused exactly as-is — it is NOT rewritten, duplicated, or
+    modified here. It connects to PostgreSQL itself (via its own DB_CONFIG /
+    DB_* env vars) and stores its output there; this worker only waits for it,
+    records the outcome, and then links that output to this project/job via
+    parser_adapter (so Django can later retrieve only this project's data).
+
+    This is the ONLY seam that changes when a real worker replaces the
+    thread. To migrate to Celery/RQ later:
+      1. Move this function into a tasks module (e.g. analyzer/tasks.py).
+      2. Decorate with @shared_task (Celery) / @job (RQ) / @task (Dramatiq).
+      3. In add_project, replace the threading.Thread(...) block with
+         run_repository_analysis.delay(analysis_job.id).
+
+    No AI, no embeddings, and no parser-output storage is implemented here.
+    """
+    try:
+        analysis_job = AnalysisJob.objects.get(id=analysis_job_id)
+        project = analysis_job.project
+
+        # ---------------- Clone phase: pending -> cloning ----------------
+        analysis_job.status = 'cloning'
+        analysis_job.started_at = timezone.now()
+        analysis_job.progress = 10
+        analysis_job.save()
+
+        project.analysis_status = 'cloning'
+        project.save()
+
+        log_lines = []
+
+        clone_dir = Path(settings.MEDIA_ROOT) / 'repos' / str(project.id)
+        if clone_dir.exists():
+            # Safe re-clone: remove any previous clone for this project.
+            shutil.rmtree(clone_dir)
+        clone_dir.mkdir(parents=True, exist_ok=True)
+
+        # Real clone via the system git binary.
+        # NOTE: shallow single-branch clone keeps big repos fast; drop the
+        # flags if a later phase needs full history.
+        clone_result = subprocess.run(
+            ['git', 'clone', '--depth', '1', '--single-branch',
+             project.github_url, str(clone_dir)],
+            capture_output=True,
             text=True,
-            env=env,
-            cwd=settings.BASE_DIR
+            timeout=300,  # bail out of a hung clone
         )
 
-        # Wait for completion with timeout
-        stdout, stderr = process.communicate(timeout=300)  # 5 minute timeout
+        if clone_result.returncode != 0:
+            error_msg = (clone_result.stderr or clone_result.stdout or 'git clone failed').strip()
+            raise CloneError(f"git clone failed: {error_msg}")
 
-        # Update based on result
-        if process.returncode == 0:
-            # Success - update project and job
-            project.analysis_status = 'completed'
-            project.last_analyzed = timezone.now()
+        log_lines.append("[STEP 2] Repository cloned")
+        logger.info("[STEP 2] Repository cloned (job id=%s)", analysis_job_id)
+        logger.info("Clone location: %s", clone_dir)
 
-            analysis_job.status = 'completed'
-            analysis_job.completed_at = timezone.now()
-            analysis_job.progress = 100
-
-            # Try to get actual counts from the database
-            try:
-                # The unmanaged analysis tables (files, code_entities, relationships)
-                # are not project-scoped, so counts reflect all analyzed repositories.
-                # Count files
-                analysis_job.files_analyzed = File.objects.count()
-
-                # Count entities by type
-                analysis_job.functions_found = CodeEntity.objects.filter(
-                    type='function'
-                ).count()
-
-                analysis_job.classes_found = CodeEntity.objects.filter(
-                    type='class'
-                ).count()
-
-                analysis_job.methods_found = CodeEntity.objects.filter(
-                    type='method'
-                ).count()
-
-                # Count relationships
-                analysis_job.relationships_found = Relationship.objects.count()
-
-                logger.info(f"Analysis of {project.name} completed with {analysis_job.files_analyzed} files analyzed")
-            except Exception as e:
-                # If we can't get the actual counts, log the error
-                logger.warning(f"Could not retrieve analysis metrics for project {project.id}: {str(e)}")
-                analysis_job.files_analyzed = 0
-                analysis_job.functions_found = 0
-                analysis_job.classes_found = 0
-                analysis_job.methods_found = 0
-                analysis_job.relationships_found = 0
-
-            # Combine stdout and stderr for logs
-            combined_logs = f"STDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
-            analysis_job.logs = combined_logs
-
-            logger.info(f"Analysis of {project.name} completed successfully")
-        else:
-            # Failure
-            project.analysis_status = 'failed'
-
-            analysis_job.status = 'failed'
-            analysis_job.completed_at = timezone.now()
-
-            # Store error message
-            error_msg = stderr[:500] if stderr else "Unknown error occurred"
-            
-            # Combine stdout and stderr for logs
-            combined_logs = f"STDOUT:\n{stdout}\n\nSTDERR:\n{stderr}"
-            analysis_job.logs = combined_logs
-
-            logger.error(f"Analysis of {project.name} failed: {error_msg}")
-
-        project.save()
+        # ---------------- Parser phase: cloning -> processing ----------------
+        analysis_job.status = 'processing'
+        analysis_job.progress = 30
         analysis_job.save()
 
-    except Project.DoesNotExist as e:
-        logger.exception(f"Project {project_id} not found during analysis")
-    except subprocess.TimeoutExpired as e:
-        # Handle timeout
-        logger.exception(f"Analysis of project {project_id} timed out after 300 seconds")
-        try:
-            project = Project.objects.get(id=project_id)
-            project.analysis_status = 'failed'
-            project.save()
+        project.analysis_status = 'processing'
+        project.save()
 
-            analysis_job = AnalysisJob.objects.filter(project=project).order_by('-created_at').first()
-            if analysis_job:
-                analysis_job.status = 'failed'
-                analysis_job.completed_at = timezone.now()
-                analysis_job.progress = 0
-                analysis_job.save()
-        except Project.DoesNotExist:
-            logger.warning(f"Project {project_id} was deleted during analysis")
+        # Path to the existing parser (repo_parser.py sits next to the project root).
+        parser_path = Path(settings.BASE_DIR).parent / 'repo_parser.py'
+        if not parser_path.exists():
+            raise CloneError(f"Parser not found at {parser_path}")
+
+        log_lines.append("[STEP 3] Starting parser")
+        logger.info("[STEP 3] Starting parser (job id=%s)", analysis_job_id)
+        logger.info("Parser entry point: %s", parser_path)
+        logger.info("Repository path passed to parser: %s", clone_dir)
+
+        logger.info("Parser execution started (job id=%s)", analysis_job_id)
+
+        # Invoke the existing parser on the already-cloned repository.
+        # sys.executable ensures the parser runs with the same interpreter as
+        # Django (the project venv), which has pygit2/tree-sitter/psycopg2.
+        start_time = time.monotonic()
+        try:
+            parser_result = subprocess.run(
+                [sys.executable, str(parser_path), '--repo-path', str(clone_dir)],
+                capture_output=True,
+                text=True,
+                timeout=600,  # generous cap; bail out of a hung parser
+            )
+            elapsed = time.monotonic() - start_time
+        except subprocess.TimeoutExpired:
+            elapsed = time.monotonic() - start_time
+            log_lines.append("[STEP 4] Parser failed")
+            log_lines.append(f"Parser entry point: {parser_path}")
+            log_lines.append(f"Repository path passed to parser: {clone_dir}")
+            log_lines.append(f"Parser execution time: {elapsed:.2f}s")
+            log_lines.append("Error: parser timed out after 600s")
+            logger.error("[STEP 4] Parser failed (job id=%s): timed out after 600s", analysis_job_id)
+            _mark_job_failed(analysis_job_id, "\n".join(log_lines))
+            return
+
+        if parser_result.returncode != 0:
+            error_msg = (parser_result.stderr or parser_result.stdout or 'parser failed').strip()
+            log_lines.append("[STEP 4] Parser failed")
+            log_lines.append(f"Parser entry point: {parser_path}")
+            log_lines.append(f"Repository path passed to parser: {clone_dir}")
+            log_lines.append(f"Parser execution time: {elapsed:.2f}s")
+            log_lines.append(f"Exit code: {parser_result.returncode}")
+            log_lines.append(f"Error: {error_msg[:2000]}")
+            logger.error("[STEP 4] Parser failed (job id=%s): %s", analysis_job_id, error_msg)
+            _mark_job_failed(analysis_job_id, "\n".join(log_lines))
+            return
+
+        # ---------------- Link parser output to Project + AnalysisJob ----
+        # The parser wrote globally; associate every row under this project's
+        # clone directory with this project and job before serving it back.
+        logger.info("Parser execution completed (job id=%s)", analysis_job_id)
+        try:
+            linked = parser_adapter.link_project_output(
+                project.id, analysis_job_id, clone_dir,
+            )
         except Exception as e:
-            logger.exception(f"Unexpected error handling timeout for project {project_id}")
-    except Exception as e:
-        # Handle any other exceptions
-        logger.exception(f"Unexpected error during analysis of project {project_id}: {str(e)}")
-        try:
-            project = Project.objects.get(id=project_id)
-            project.analysis_status = 'failed'
-            project.save()
+            # The parse succeeded, but without linkage this project's data
+            # cannot be scoped and would leak into other projects' queries.
+            # Treat it as a failure so no unlinked (global) data is served.
+            logger.exception("Linkage failed for project %s: %s", project.id, e)
+            log_lines.append("[STEP 4] Parser completed but linking output to the project failed")
+            log_lines.append(f"Error: {e}")
+            _mark_job_failed(analysis_job_id, "\n".join(log_lines))
+            return
 
-            analysis_job = AnalysisJob.objects.filter(project=project).order_by('-created_at').first()
-            if analysis_job:
-                analysis_job.status = 'failed'
-                analysis_job.completed_at = timezone.now()
-                analysis_job.progress = 0
-                analysis_job.save()
-        except Project.DoesNotExist:
-            logger.warning(f"Project {project_id} was deleted during analysis")
-        except Exception as nested_e:
-            logger.exception(f"Error while handling exception for project {project_id}: {str(nested_e)}")
+        logger.info("Project linked successfully (project id=%s)", project.id)
+        logger.info("AnalysisJob linked successfully (job id=%s)", analysis_job_id)
+        logger.info("Files linked: %s", linked['files_linked'])
+        logger.info("Entities linked: %s", linked['entities_linked'])
+        logger.info("Relationships linked: %s", linked['relationships_linked'])
+
+        # ---------------- processing -> completed ----------------
+        log_lines.append("[STEP 4] Parser completed successfully")
+        log_lines.append(f"Parser entry point: {parser_path}")
+        log_lines.append(f"Repository path passed to parser: {clone_dir}")
+        log_lines.append(f"Parser execution time: {elapsed:.2f}s")
+        log_lines.append(f"Exit code: {parser_result.returncode}")
+
+        analysis_job.status = 'completed'
+        analysis_job.completed_at = timezone.now()
+        analysis_job.progress = 100
+        analysis_job.logs = "\n".join(log_lines)
+        analysis_job.save()
+
+        project.analysis_status = 'completed'
+        project.last_analyzed = timezone.now()
+        project.save()
+
+        logger.info("[STEP 4] Parser completed successfully (job id=%s)", analysis_job_id)
+
+    except (AnalysisJob.DoesNotExist, Project.DoesNotExist):
+        logger.exception(f"AnalysisJob {analysis_job_id} (or its project) not found during analysis")
+    except CloneError as e:
+        logger.error("[STEP 4] Parser failed (job id=%s): %s", analysis_job_id, e)
+        _mark_job_failed(analysis_job_id, f"Clone/parser failed: {e}")
+    except Exception as e:
+        logger.exception(f"Unexpected error during analysis of job {analysis_job_id}: {str(e)}")
+        _mark_job_failed(analysis_job_id, f"Clone/parser failed: {str(e)}")
 
 @csrf_exempt
 @require_http_methods(["POST"])

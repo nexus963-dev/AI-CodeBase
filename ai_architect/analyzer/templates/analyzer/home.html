@@ -196,6 +196,10 @@
             <span class="font-medium">{{ user.first_name|default:user.username }}</span>
         </div>
         <a href="{% url 'analyzer:dashboard' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Dashboard</a>
+        <a href="{% url 'analyzer:logout' %}" class="flex items-center gap-xs text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">
+        <span class="material-symbols-outlined text-[18px]">logout</span>
+            Logout
+        </a>
     {% else %}
         <a href="{% url 'analyzer:login' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">Sign In</a>
         <a href="{% url 'analyzer:signup' %}" class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</a>

@@ -28,6 +28,8 @@ class Project(models.Model):
         max_length=20,
         choices=[
             ('pending', 'Pending'),
+            ('cloning', 'Cloning'),
+            ('processing', 'Processing'),
             ('analyzing', 'Analyzing'),
             ('completed', 'Completed'),
             ('failed', 'Failed')
@@ -52,6 +54,8 @@ class AnalysisJob(models.Model):
         choices=[
             ('pending', 'Pending'),
             ('running', 'Running'),
+            ('cloning', 'Cloning'),
+            ('processing', 'Processing'),
             ('completed', 'Completed'),
             ('failed', 'Failed')
         ],
@@ -73,6 +77,7 @@ class AnalysisJob(models.Model):
     started_at = models.DateTimeField(null=True, blank=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Analysis of {self.project.name} - {self.status}"
