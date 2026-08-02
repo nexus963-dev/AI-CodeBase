@@ -245,9 +245,20 @@
                                     </div>
         </div>
         </div>
-        <button class="p-1 rounded hover:bg-surface-container transition-colors">
+        <div class="relative" data-project-menu="{{ project.id }}">
+        <button type="button" class="p-1 rounded hover:bg-surface-container transition-colors project-menu-btn" aria-label="More options">
         <span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
         </button>
+        <div class="hidden absolute right-0 top-full mt-1 z-20 min-w-[150px] bg-surface-card border border-outline-variant rounded-xl shadow-lg py-1 project-menu">
+        <form method="post" action="{% url 'analyzer:delete_project' project.id %}" onsubmit="return confirm('Delete project &quot;{{ project.name }}&quot; and all its analysis data? This cannot be undone.');">
+        {% csrf_token %}
+        <button type="submit" class="w-full text-left px-md py-2 text-label-md text-status-error hover:bg-status-error/10 transition-colors flex items-center gap-sm">
+        <span class="material-symbols-outlined text-[18px]">delete</span>
+                            Delete Project
+                        </button>
+        </form>
+        </div>
+        </div>
         </div>
         <div class="bg-surface-container-low rounded-lg p-sm">
         <div class="flex items-center justify-between mb-sm">
@@ -366,6 +377,26 @@
                 card.style.opacity = '1';
                 card.style.transform = 'translateY(0)';
             }, index * 100);
+        });
+
+        // Project card "more options" menu
+        document.querySelectorAll('.project-menu-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = btn.closest('[data-project-menu]').querySelector('.project-menu');
+                // Close any other open menu first
+                document.querySelectorAll('.project-menu').forEach(m => {
+                    if (m !== menu) m.classList.add('hidden');
+                });
+                menu.classList.toggle('hidden');
+            });
+        });
+
+        // Close menus on outside click
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('[data-project-menu]')) {
+                document.querySelectorAll('.project-menu').forEach(m => m.classList.add('hidden'));
+            }
         });
     </script>
 

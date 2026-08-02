@@ -213,9 +213,9 @@
     </div>
     <!-- Footer Actions -->
     <div class="p-lg bg-surface-container-lowest border-t border-outline-variant flex items-center justify-end gap-md">
-    <button class="px-lg h-11 rounded-xl font-label-md text-label-md text-text-secondary hover:bg-surface-container-high active:scale-95 transition-all" type="button">
+    <a href="{% url 'analyzer:dashboard' %}" class="px-lg h-11 inline-flex items-center rounded-xl font-label-md text-label-md text-text-secondary hover:bg-surface-container-high active:scale-95 transition-all">
                     Cancel
-                </button>
+                </a>
     <button class="px-lg h-11 bg-primary text-on-primary rounded-xl font-label-md text-label-md shadow-md hover:brightness-110 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:grayscale disabled:scale-100 flex items-center gap-base" disabled="" id="analyze-btn" type="submit">
     <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
                     Analyze Repository

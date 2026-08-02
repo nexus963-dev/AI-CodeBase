@@ -283,6 +283,23 @@ def analyze_project_status(request, project_id):
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+@login_required
+@require_http_methods(["POST"])
+def delete_project(request, project_id):
+    """Delete a project and its analysis jobs.
+    Ownership is verified so users can only delete their own projects.
+    """
+    try:
+        project = Project.objects.get(id=project_id, owner=request.user)
+        project_name = project.name
+        project.delete()  # AnalysisJobs cascade via the FK relationship
+        messages.success(request, f"Project '{project_name}' deleted successfully.")
+        logger.info(f"User {request.user.id} deleted project {project_id}")
+    except Project.DoesNotExist:
+        logger.warning(f"Delete denied: project {project_id} not found for user {request.user.id}")
+        messages.error(request, "Project not found.")
+    return redirect('analyzer:dashboard')
+
 def run_repository_analysis(project_id):
     """Background function to run the repository analysis pipeline"""
     try:
@@ -314,9 +331,12 @@ def run_repository_analysis(project_id):
         os.makedirs(os.path.join(settings.MEDIA_ROOT, 'repos'), exist_ok=True)
 
         # Build command to run repo_parser.py
+        # repo_parser.py lives at the repo root, one level above settings.BASE_DIR
+        # Use the same interpreter running Django so the parser has access to
+        # the same installed packages (pygit2, tree-sitter, psycopg2).
         cmd = [
-            'python',
-            os.path.join(settings.BASE_DIR, 'repo_parser.py'),
+            sys.executable,
+            os.path.join(settings.BASE_DIR.parent, 'repo_parser.py'),
             '--repo-url', repo_url,
             '--to-path', repo_path
         ]
@@ -355,30 +375,27 @@ def run_repository_analysis(project_id):
 
             # Try to get actual counts from the database
             try:
-                # Count files for this project
-                analysis_job.files_analyzed = File.objects.filter(project=project).count()
-                
+                # The unmanaged analysis tables (files, code_entities, relationships)
+                # are not project-scoped, so counts reflect all analyzed repositories.
+                # Count files
+                analysis_job.files_analyzed = File.objects.count()
+
                 # Count entities by type
                 analysis_job.functions_found = CodeEntity.objects.filter(
-                    project=project, 
                     type='function'
                 ).count()
-                
+
                 analysis_job.classes_found = CodeEntity.objects.filter(
-                    project=project, 
                     type='class'
                 ).count()
-                
+
                 analysis_job.methods_found = CodeEntity.objects.filter(
-                    project=project, 
                     type='method'
                 ).count()
-                
+
                 # Count relationships
-                analysis_job.relationships_found = Relationship.objects.filter(
-                    project=project
-                ).count()
-                
+                analysis_job.relationships_found = Relationship.objects.count()
+
                 logger.info(f"Analysis of {project.name} completed with {analysis_job.files_analyzed} files analyzed")
             except Exception as e:
                 # If we can't get the actual counts, log the error
