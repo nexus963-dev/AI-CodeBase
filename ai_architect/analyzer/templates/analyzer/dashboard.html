@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+<!DOCTYPE html><html lang="en" class="light"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
       tailwind.config = {
         darkMode: "class",
         theme: {
@@ -10,7 +10,7 @@
                 "on-tertiary": "#ffffff",
                 "on-primary-container": "#eeefff",
                 "primary": "#004ac6",
-                "inverse-on-surface": "$eaf1ff",
+                "inverse-on-surface": "#eaf1ff",
                 "on-secondary": "#ffffff",
                 "surface": "#f8f9ff",
                 "primary-fixed": "#dbe1ff",
@@ -37,16 +37,16 @@
                 "outline": "#737686",
                 "outline-variant": "#c3c6d7",
                 "primary-container": "#2563eb",
-                "inverse-primary": "$b4c5ff",
+                "inverse-primary": "#b4c5ff",
                 "status-warning": "#F59E0B",
-                "primary-fixed-dim": "$b4c5ff",
+                "primary-fixed-dim": "#b4c5ff",
                 "text-secondary": "#374151",
                 "tertiary-fixed-dim": "#ffb596",
                 "on-background": "#121c2a",
                 "secondary": "#0058be",
-                "on-error-container": "$93000a",
-                "text-primary": "$1F2937",
-                "on-surface": "$121c2a",
+                "on-error-container": "#93000a",
+                "text-primary": "#1F2937",
+                "on-surface": "#121c2a",
                 "surface-container-low": "#eff4ff",
                 "on-secondary-fixed": "#001a42",
                 "surface-bright": "#f8f9ff",
@@ -55,25 +55,10 @@
                 "on-secondary-container": "#fefcff",
                 "on-secondary-fixed-variant": "#004395",
                 "on-primary-fixed": "#00174b",
-                "surface-base": "$F9FAFB",
-                "surface-variant": "$d9e3f6",
-                "primary-container": "$2563eb",
-                "surface-container": "$e6eeff",
-                "error-container": "#ffdad6",
-                "on-primary": "$ffffff",
-                "surface-container-highest": "$d9e3f6",
-                "on-secondary": "$ffffff",
-                "on-tertiary-fixed-variant": "$7d2d00",
-                "status-warning": "$F59E0B",
-                "on-tertiary-container": "$ffede6",
-                "on-tertiary-fixed": "$360f00",
-                "text-secondary": "$374151",
-                "surface-container-high": "$dee9fc",
-                "on-surface": "$121c2a",
-                "on-primary-fixed-variant": "$003ea8",
-                "text-primary": "$1F2937",
-                "secondary-container": "$2170e4",
-                "tertiary": "$943700"
+                "surface-base": "#F9FAFB",
+                "background": "#f8f9ff",
+                "tertiary": "#943700",
+                "on-tertiary-fixed-variant": "#7d2d00"
             },
             "borderRadius": {
                 "DEFAULT": "0.125rem",
@@ -113,11 +98,10 @@
                 "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
                 "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
                 "headline-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
-                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "font-weight": "700"}],
-                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
-                "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
-                "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
-                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "code-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
             }
           },
         },
@@ -144,10 +128,10 @@
 <span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
 <span class="font-label-md">My Projects</span>
 </a>
-        <a href="{% url 'analyzer:add_project' %}" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg">
-            <span class="material-symbols-outlined" data-icon="add_box">add_box</span>
-            <span class="font-label-md">New Project</span>
-        </a>
+<a href="{% url 'analyzer:add_project' %}" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
+<span class="material-symbols-outlined" data-icon="add_box">add_box</span>
+<span class="font-label-md">New Project</span>
+</a>
 <a href="#" class="text-on-surface-variant hover:bg-surface-container-high mx-2 flex items-center gap-md px-md py-sm transition-all duration-200 ease-out rounded-lg group">
 <span class="material-symbols-outlined" data-icon="analytics">analytics</span>
 <span class="font-label-md">Analytics</span>
@@ -185,29 +169,20 @@
 </div>
 </div>
 <div class="flex items-center gap-sm">
-<div class="flex items-center gap-md">
-  {% if user.is_authenticated %}
-    <div class="flex items-center space-x-2 text-sm text-on-surface-variant">
-      <span class="material-symbols-outlined text-[20px]">person</span>
-      <span class="font-medium">{{ user.first_name|default:user.username }}</span>
-    </div>
-    <a href="{% url 'analyzer:logout' %}" class="flex items-center gap-xs text-label-md text-on-surface-variant hover:text-primary transition-colors px-2 py-1 rounded hover:bg-surface-container-high">
-      <span class="material-symbols-outlined text-[18px]">logout</span>
-      Logout
-    </a>
-  {% else %}
-    <a href="{% url 'analyzer:login' %}" class="text-label-md text-on-surface-variant hover:text-primary transition-colors">Sign In</a>
-    <a href="{% url 'analyzer:signup' %}" class="bg-primary text-on-primary px-md py-1.5 rounded-full font-label-md hover:opacity-90 active:scale-95 transition-all">Sign Up</a>
-  {% endif %}
+<div class="flex items-center gap-md mr-2"><button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors flex items-center justify-center" id="theme-toggle"><span class="material-symbols-outlined text-on-surface-variant">dark_mode</span></button></div>
+<div class="flex items-center gap-xs ml-md">
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-status-error rounded-full"></span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
 </div>
-<div class="flex items-center gap-xs">
-  <button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors relative">
-    <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
-    <span class="absolute top-2 right-2 w-2 h-2 bg-status-error rounded-full"></span>
-  </button>
-  <button class="p-2 rounded-full hover:bg-surface-container-highest transition-colors">
-    <span class="material-symbols-outlined text-on-surface-variant">help</span>
-  </button>
+<div class="ml-sm pl-sm border-l border-outline-variant"><div class="flex items-center gap-sm cursor-pointer hover:bg-surface-container-high p-1 rounded-lg transition-all"><div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-sm">{{ user.first_name|default:user.username|first|upper }}</div><span class="font-label-md text-on-surface hidden md:block">{{ user.first_name|default:user.username }}</span></div></div>
+<a href="{% url 'analyzer:logout' %}" class="p-2 rounded-full hover:bg-surface-container-highest transition-colors ml-sm" title="Logout">
+<span class="material-symbols-outlined text-on-surface-variant">logout</span>
+</a>
 </div>
 </header>
 <!-- Dashboard Content -->
@@ -230,111 +205,90 @@
 </div>
 <!-- Project Grid -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
-{% if projects_with_status %}
-    {% for item in projects_with_status %}
-        {% with project=item.project latest_job=item.latest_job %}
-        <!-- Project Card -->
-        <div class="bg-surface-card border border-outline-variant rounded-xl p-md flex flex-col gap-md card-hover transition-all duration-200" data-status="{{ latest_job.status|default:'none' }}">
-        <div class="flex items-start justify-between">
-        <div class="flex items-center gap-sm">
-        <div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center">
-        <span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">terminal</span>
-        </div>
-        <div class="">
-        <h3 class="font-headline-sm text-on-surface">{{ project.name }}</h3>
-        <div class="flex items-center gap-xs text-label-sm text-on-surface-variant">
-        <span class="material-symbols-outlined text-sm">link</span>
-                                        {{ project.github_url }}
-                                    </div>
-        </div>
-        </div>
-        <div class="relative" data-project-menu="{{ project.id }}">
-        <button type="button" class="p-1 rounded hover:bg-surface-container transition-colors project-menu-btn" aria-label="More options">
-        <span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
-        </button>
-        <div class="hidden absolute right-0 top-full mt-1 z-20 min-w-[150px] bg-surface-card border border-outline-variant rounded-xl shadow-lg py-1 project-menu">
-        <a href="{% url 'analyzer:chat_interface' project.id %}" class="w-full text-left px-md py-2 text-label-md text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-sm">
-        <span class="material-symbols-outlined text-[18px]">forum</span>
-                            Chat
-                        </a>
-        <form method="post" action="{% url 'analyzer:delete_project' project.id %}" onsubmit="return confirm('Delete project &quot;{{ project.name }}&quot; and all its analysis data? This cannot be undone.');">
-        {% csrf_token %}
-        <button type="submit" class="w-full text-left px-md py-2 text-label-md text-status-error hover:bg-status-error/10 transition-colors flex items-center gap-sm">
-        <span class="material-symbols-outlined text-[18px]">delete</span>
-                            Delete Project
-                        </button>
-        </form>
-        </div>
-        </div>
-        </div>
-        <div class="bg-surface-container-low rounded-lg p-sm">
-        <div class="flex items-center justify-between mb-sm">
-        <span class="text-label-sm text-on-surface-variant">Architecture Health</span>
-        {% if latest_job and latest_job.status == 'completed' %}
-            <span class="text-label-sm font-bold text-status-success">{{ latest_job.health_score|default:"0" }}%</span>
-        {% elif latest_job and latest_job.status == 'running' %}
-            <span class="text-label-sm font-bold text-primary">Analyzing...</span>
-        {% elif latest_job and latest_job.status == 'failed' %}
-            <span class="text-label-sm font-bold text-status-error">Failed</span>
-        {% else %}
-            <span class="text-label-sm font-bold text-on-surface-variant">Not Analyzed</span>
-        {% endif %}
-        </div>
-        <div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
-        {% if latest_job and latest_job.status == 'completed' %}
-            <div class="bg-status-success h-full w-[{{ latest_job.health_score|default:"0" }}%]"></div>
-        {% elif latest_job and latest_job.status == 'running' %}
-            <div class="bg-primary h-full w-[25%] animate-pulse"></div>
-        {% else %}
-            <div class="bg-outline-variant h-full w-[100%]"></div>
-        {% endif %}
-        </div>
-        </div>
-        <div class="mt-auto pt-sm border-t border-outline-variant flex items-center justify-between">
-        <div class="flex items-center gap-xs text-status-success text-label-sm">
-        <span class="w-2 h-2 rounded-full bg-status-success {% if latest_job and latest_job.status == 'completed' %}animate-pulse{% endif %}"></span>
-                            {% if latest_job and latest_job.updated_at %}
-                                Updated: {{ latest_job.updated_at|timesince }} ago
-                            {% else %}
-                                Never
-                            {% endif %}
-                        </div>
-        <span class="text-label-sm text-on-surface-variant">
-            {% if latest_job and latest_job.updated_at %}
-                {{ latest_job.updated_at|timesince }} ago
-            {% else %}
-                Never
-            {% endif %}
-        </span>
-        </div>
-        </div>
-        {% endwith %}
-    {% endfor %}
-{% else %}
-    <!-- Empty State -->
-    <div class="bg-surface-card border border-outline-variant rounded-xl p-md flex flex-col items-center justify-center text-center">
-    <div class="w-16 h-16 bg-surface-container-high/50 text-primary rounded-full flex items-center justify-center mb-lg">
-    <span class="material-symbols-outlined">folder_open</span>
+{% for item in projects_with_status %}
+    {% with project=item.project latest_job=item.latest_job %}
+    <!-- Project Card -->
+    <div class="bg-surface-card border border-outline-variant rounded-xl p-md flex flex-col gap-md card-hover transition-all duration-200" data-status="{{ latest_job.status|default:'none' }}">
+    <div class="flex items-start justify-between">
+    <div class="flex items-center gap-sm">
+    <div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center">
+    <span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">terminal</span>
     </div>
-    <h3 class="font-headline-sm text-on-surface">No Projects Yet</h3>
-    <p class="text-body-md text-on-surface-variant">
-        Get started by adding your first repository to analyze its architecture.
-    </p>
-    <a href="{% url 'analyzer:add_project' %}" class="w-full mt-lg px-md py-sm bg-primary text-on-primary font-label-md rounded-xl hover:bg-primary-container transition-all">
-        Add First Project
+    <div class="">
+    <h3 class="font-headline-sm text-on-surface">{{ project.name }}</h3>
+    <div class="flex items-center gap-xs text-label-sm text-on-surface-variant">
+    <span class="material-symbols-outlined text-sm">link</span>
+                                    {{ project.github_url }}
+                                </div>
+    </div>
+    </div>
+    <div class="relative" data-project-menu="{{ project.id }}">
+    <button type="button" class="p-1 rounded hover:bg-surface-container transition-colors project-menu-btn" aria-label="More options">
+    <span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+    </button>
+    <div class="hidden absolute right-0 top-full mt-1 z-20 min-w-[150px] bg-surface-card border border-outline-variant rounded-xl shadow-lg py-1 project-menu">
+    <form method="post" action="{% url 'analyzer:delete_project' project.id %}" onsubmit="return confirm('Delete project &quot;{{ project.name }}&quot; and all its analysis data? This cannot be undone.');">
+    {% csrf_token %}
+    <button type="submit" class="w-full text-left px-md py-2 text-label-md text-status-error hover:bg-status-error/10 transition-colors flex items-center gap-sm">
+    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                Delete Project
+                            </button>
+    </form>
+    </div>
+    </div>
+    </div>
+    <div class="bg-surface-container-low rounded-lg p-sm">
+    <div class="flex items-center justify-between mb-sm">
+    <span class="text-label-sm text-on-surface-variant">Architecture Health</span>
+    {% if latest_job and latest_job.status == 'completed' %}
+        <span class="text-label-sm font-bold text-status-success">{{ latest_job.health_score|default:"0" }}%</span>
+    {% elif latest_job and latest_job.status == 'running' %}
+        <span class="text-label-sm font-bold text-primary">Analyzing...</span>
+    {% elif latest_job and latest_job.status == 'failed' %}
+        <span class="text-label-sm font-bold text-status-error">Failed</span>
+    {% else %}
+        <span class="text-label-sm font-bold text-on-surface-variant">Not Analyzed</span>
+    {% endif %}
+    </div>
+    <div class="w-full bg-outline-variant h-1.5 rounded-full overflow-hidden">
+    {% if latest_job and latest_job.status == 'completed' %}
+        <div class="bg-status-success h-full w-[{{ latest_job.health_score|default:"0" }}%]"></div>
+    {% elif latest_job and latest_job.status == 'running' %}
+        <div class="bg-primary h-full w-[25%] animate-pulse"></div>
+    {% else %}
+        <div class="bg-outline-variant h-full w-[100%]"></div>
+    {% endif %}
+    </div>
+    </div>
+    <div class="mt-auto pt-sm border-t border-outline-variant flex items-center justify-between">
+    <a href="{% url 'analyzer:chat_interface' project.id %}" class="flex items-center gap-xs px-2 py-1 rounded-lg text-label-sm text-primary hover:bg-primary-container/20 transition-colors group/chat">
+    <span class="material-symbols-outlined text-sm">forum</span>
+    <span class="">Chat</span>
     </a>
+    <div class="flex items-center gap-xs text-status-success text-label-sm">
+    <span class="w-2 h-2 rounded-full bg-status-success {% if latest_job and latest_job.status == 'completed' %}animate-pulse{% endif %}"></span>
+                                Synced
+                            </div>
+    <span class="text-label-sm text-on-surface-variant">Last updated: {% if latest_job and latest_job.updated_at %}{{ latest_job.updated_at|timesince }} ago{% else %}Never{% endif %}</span>
     </div>
-{% endif %}
+    </div>
+    {% endwith %}
+{% endfor %}
+<!-- Add New Project Card -->
+<a href="{% url 'analyzer:add_project' %}" class="border-2 border-dashed border-outline-variant rounded-xl p-md flex flex-col items-center justify-center gap-sm cursor-pointer hover:bg-surface-container-low hover:border-primary transition-all group min-h-[220px]">
+<div class="w-12 h-12 rounded-full bg-surface-container-high flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-headline-md">add</span>
+</div>
+<span class="font-label-md text-on-surface-variant group-hover:text-primary">Create New Project</span>
+</a>
 </div>
 <!-- Bento-style Analytics Summary -->
 <div class="mt-xl grid grid-cols-1 md:grid-cols-4 gap-lg">
 <div class="md:col-span-2 bg-surface-container rounded-2xl p-lg relative overflow-hidden">
 <div class="relative z-10">
-<h4 class="font-headline-sm text-primary mb-xs">Analysis Overview</h4>
-<p class="text-body-sm text-on-surface-variant mb-md max-w-xs">
-    You have {{ project_count }} project(s) with {{ completed_jobs_count }} completed analysis{{ completed_jobs_count|pluralize }}.
-</p>
-<button class="bg-primary text-on-primary px-md py-sm rounded-xl text-label-md">View Details</button>
+<h4 class="font-headline-sm text-primary mb-xs">Architecture Optimization</h4>
+<p class="text-body-sm text-on-surface-variant mb-md max-w-xs">AI suggestions can reduce your average latency by 140ms across all microservices.</p>
+<button class="bg-primary text-on-primary px-md py-sm rounded-xl text-label-md">Review Insights</button>
 </div>
 <div class="absolute -bottom-10 -right-10 opacity-10">
 <span class="material-symbols-outlined text-[200px]" style="font-variation-settings: 'FILL' 1;">analytics</span>
@@ -343,21 +297,21 @@
 <div class="bg-surface-card border border-outline-variant rounded-2xl p-lg flex flex-col justify-between">
 <div class="flex items-center justify-between">
 <span class="material-symbols-outlined text-primary">security_update_good</span>
-<span class="text-label-sm bg-status-success/10 text-status-success px-2 py-1 rounded">Secure</span>
+<span class="text-label-sm bg-status-success/10 text-status-success px-2 py-1 rounded">Stable</span>
 </div>
 <div>
-<span class="text-display-lg font-bold block">{{ project_count }}</span>
-<span class="text-label-md text-on-surface-variant uppercase tracking-wider">Projects</span>
+<span class="text-display-lg font-bold block">12</span>
+<span class="text-label-md text-on-surface-variant uppercase tracking-wider">Security Patches</span>
 </div>
 </div>
 <div class="bg-surface-card border border-outline-variant rounded-2xl p-lg flex flex-col justify-between">
 <div class="flex items-center justify-between">
 <span class="material-symbols-outlined text-status-error">bug_report</span>
-<span class="text-label-sm bg-status-error/10 text-status-error px-2 py-1 rounded">Issues Found</span>
+<span class="text-label-sm bg-status-error/10 text-status-error px-2 py-1 rounded">Action Required</span>
 </div>
 <div>
-<span class="text-display-lg font-bold block">{{ total_files_analyzed }}</span>
-<span class="text-label-md text-on-surface-variant uppercase tracking-wider">Lines Analyzed</span>
+<span class="text-display-lg font-bold block">04</span>
+<span class="text-label-md text-on-surface-variant uppercase tracking-wider">System Bottlenecks</span>
 </div>
 </div>
 </div>
@@ -385,7 +339,8 @@
                 card.style.transform = 'translateY(0)';
             }, index * 100);
         });
-
+    </script>
+<script class="">
         // Project card "more options" menu
         document.querySelectorAll('.project-menu-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {

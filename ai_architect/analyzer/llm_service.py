@@ -54,6 +54,21 @@ def _render_section(title, items, line_fn):
     return f"## {title}\n" + "\n".join(f"- {l}" for l in lines) + "\n"
 
 
+def _render_entities_by_file(title, items, line_fn):
+    """Render entities grouped by their file, so lists read like a real
+    repository browser instead of a flat dump."""
+    if not items:
+        return ''
+    by_file = {}
+    for it in items:
+        by_file.setdefault(it.get('file_path', '?'), []).append(it)
+    chunks = [f"## {title}"]
+    for path, group in by_file.items():
+        chunks.append(f"### {path}")
+        chunks.extend(f"- {line_fn(it)}" for it in group)
+    return "\n".join(chunks) + "\n"
+
+
 def build_prompt(context, question):
     """Turn a structured repository context + question into a prompt string."""
     s = context['summary']
@@ -73,27 +88,50 @@ def build_prompt(context, question):
         'Files', context['files'],
         lambda f: f['path'],
     ))
-    parts.append(_render_section(
+    parts.append(_render_entities_by_file(
         'Classes', context['classes'],
-        lambda c: f"{c['name']} ({c.get('file_path', '')}, {c.get('start_line', '?')}-{c.get('end_line', '?')})",
+        lambda c: f"{c['name']} ({c.get('start_line', '?')}-{c.get('end_line', '?')})",
     ))
-    parts.append(_render_section(
+    parts.append(_render_entities_by_file(
         'Functions', context['functions'],
-        lambda f: f"{f['name']}{f.get('signature','')} in {f.get('file_path','')}",
+        lambda f: f"{f['name']}{f.get('signature', '')}",
     ))
-    parts.append(_render_section(
+    parts.append(_render_entities_by_file(
         'Methods', context['methods'],
-        lambda m: f"{m['name']}{m.get('signature','')} in {m.get('file_path','')}",
+        lambda m: f"{m['name']}{m.get('signature', '')}",
     ))
     parts.append(_render_section(
         'Relationships', context['relationships'],
         lambda r: f"{r.get('caller_name','?')} -> {r.get('callee_name','?')} at {r.get('file_path','?')}:{r.get('line_number','?')}",
     ))
 
+    # Real source code read on demand from the cloned repository.
+    if context.get('readme'):
+        parts.append(
+            f"## Repository README (first {len(context['readme']['snippet'].splitlines())} lines)\n"
+            + context['readme']['snippet']
+        )
+
+    if context.get('code'):
+        parts.append("## Relevant Source Code (read from the repository)")
+        for block in context['code']:
+            parts.append(
+                f"### {block['path']} (lines {block['start_line']}-{block['end_line']})\n"
+                f"```\n{block['snippet']}\n```"
+            )
+
+    # Honest truncation note so the model never mistakes a sample for the whole.
+    if context.get('truncated'):
+        parts.append(
+            "Note: the metadata sections above are truncated; the summary lists "
+            "the true totals. Reply in terms of what is shown."
+        )
+
     parts.append(
         "Use ONLY the information above. If the answer is not in this "
         "context, say so rather than guessing. Do not invent code or files "
-        "not listed here.\n"
+        "not listed here. When source code is included, quote it accurately "
+        "and cite the file path.\n"
     )
     parts.append("User question:")
     parts.append(context['question'])
@@ -195,7 +233,9 @@ def answer_repository_question(project_id, question, provider=None, model=None):
     model = model or os.getenv('LLM_MODEL', DEFAULT_MODEL)
 
     try:
-        context = context_builder.build_repository_context(project_id, question)
+        context = context_builder.build_repository_context(
+            project_id, question, sources=True,
+        )
     except Project.DoesNotExist:
         return _error_result(
             f"No project found with id {project_id}.", 'invalid_project',
