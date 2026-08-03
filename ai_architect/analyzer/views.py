@@ -30,6 +30,10 @@ from .models import Project, AnalysisJob
 # ever touches parser tables or SQL directly.
 from . import knowledge_base
 
+# llm_service is the ONLY Django <-> LLM interface. The project_ask API below
+# reuses it rather than calling any provider (Gemini) directly.
+from . import llm_service
+
 logger = logging.getLogger(__name__)
 
 
@@ -557,14 +561,179 @@ def update_analysis_progress(request):
 
 @login_required
 def chat_interface(request, project_id):
-    # Verify project ownership
+    """Repository Chat page — the approved design, served to the project owner.
+
+    The conversation, file tree, and symbol tree are intentionally static
+    placeholders; this view only supplies the dynamic values the design shows
+    (project name, branch, repository statistics, last-synced time) so the page
+    renders identically while staying ready for the future AI backend. It does
+    NOT wire the chat to any LLM.
+
+    Access: unauthenticated users are redirected by @login_required; a project
+    that does not exist is 404, and a project owned by someone else is 403 —
+    mirroring analyze_project / delete_project.
+    """
     try:
-        Project.objects.get(id=project_id, owner=request.user)
-        return render(request, 'analyzer/chat.html')
+        project = Project.objects.get(id=project_id)
     except Project.DoesNotExist:
-        logger.warning(f"Chat interface access denied for project {project_id}")
-        messages.error(request, "Project not found.")
-        return redirect('analyzer:dashboard')
+        logger.warning("Chat access denied: project %s not found", project_id)
+        return HttpResponse("Project not found.", status=404)
+
+    if project.owner_id != request.user.id:
+        logger.warning(
+            "Chat access denied: user %s does not own project %s",
+            request.user.id, project_id,
+        )
+        return HttpResponse("You do not have access to this project.", status=403)
+
+    # Repository statistics for the Explorer header. Prefer the authoritative
+    # parser summary; fall back to the latest AnalysisJob counts so the page
+    # still renders if the parser database is unavailable.
+    stats = {'files': 0, 'classes': 0}
+    try:
+        summary = knowledge_base.get_project_summary(project_id)
+        stats = {
+            'files': summary['files'],
+            'classes': summary['classes'],
+        }
+    except Exception as e:
+        logger.debug("Parser summary unavailable for project %s: %s", project_id, e)
+        latest_job = project.analysis_jobs.order_by('-created_at').first()
+        if latest_job:
+            stats = {
+                'files': latest_job.files_analyzed,
+                'classes': latest_job.classes_found,
+            }
+
+    context = {
+        'project': project,
+        # Branch is not stored on Project; the pipeline always clones 'main'.
+        'branch': 'main',
+        'stats': stats,
+    }
+    return render(request, 'analyzer/chat.html', context)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def project_ask(request, project_id):
+    """Secure JSON API: ask a question about one of YOUR OWN repositories.
+
+    POST /api/projects/<project_id>/ask/
+    Body (JSON): {"question": "..."}
+
+    Authentication
+    --------------
+    The request user must be authenticated (401 otherwise). No anonymous
+    queries are allowed.
+
+    Ownership
+    ---------
+    The project must belong to ``request.user`` (``owner_id`` match). If the
+    project does not exist at all the response is 404; if it exists but belongs
+    to a different user it is treated as 403 "forbidden" — a user can never
+    query another user's repository. This mirrors the enforcement used by
+    ``analyze_project`` / ``delete_project`` (scoped ``Project.objects.get(...,
+    owner=request.user)``).
+
+    Implementation
+    --------------
+    All question answering is delegated to ``llm_service`` — the ONLY Django
+    <-> LLM interface — which reads parser data exclusively through
+    ``context_builder`` -> ``knowledge_base``, each scoped by ``project_id``.
+    This view adds no LLM logic of its own.
+
+    CSRF note: ``@csrf_exempt`` matches the existing ``update_analysis_progress``
+    endpoint. This is a token-authenticated API surface; for a cookie-only
+    deployment, gate it behind a CSRF token or an Authorization header instead.
+    """
+    # 1. Authentication.
+    if not request.user.is_authenticated:
+        return JsonResponse(
+            {'success': False, 'error': 'Authentication required.'},
+            status=401,
+        )
+
+    # 2. Parse the JSON body and require a non-empty question.
+    try:
+        payload = json.loads(request.body)
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse(
+            {'success': False, 'error': 'Request body must be valid JSON.'},
+            status=400,
+        )
+
+    question = (payload.get('question') or '').strip()
+    if not question:
+        return JsonResponse(
+            {'success': False, 'error': 'A non-empty "question" is required.'},
+            status=400,
+        )
+
+    # 3. Project existence + ownership.
+    try:
+        project = Project.objects.get(id=project_id)
+    except Project.DoesNotExist:
+        logger.warning("project_ask: project %s not found", project_id)
+        return JsonResponse(
+            {'success': False, 'error': 'Project not found.'},
+            status=404,
+        )
+
+    if project.owner_id != request.user.id:
+        logger.warning(
+            "project_ask: denied - user %s does not own project %s",
+            request.user.id, project_id,
+        )
+        return JsonResponse(
+            {'success': False, 'error': 'You do not have access to this project.'},
+            status=403,
+        )
+
+    # 4. Delegate to the LLM service. Its result is uniform:
+    #    {answer, sources, metadata}; failures set metadata['error'].
+    result = llm_service.answer_repository_question(project_id, question)
+    meta = result.get('metadata') or {}
+
+    if meta.get('error'):
+        status = _ask_error_status(meta.get('error_type'))
+        return JsonResponse(
+            {
+                'success': False,
+                'error': meta.get('message', 'Question could not be answered.'),
+                'error_type': meta.get('error_type'),
+                'metadata': meta,
+            },
+            status=status,
+        )
+
+    # 5. Success — the spec'd response shape.
+    return JsonResponse(
+        {
+            'success': True,
+            'answer': result.get('answer'),
+            'sources': result.get('sources', []),
+            'metadata': meta,
+        },
+        status=200,
+    )
+
+
+def _ask_error_status(error_type):
+    """Map an llm_service error_type to an appropriate HTTP status code.
+
+    * empty_question / empty_repository -> 400 (bad request)
+    * invalid_project                  -> 404 (not found)
+    * repository_not_available         -> 503 (parser DB / repo data down)
+    * missing_api_key / provider_sdk_missing / provider_error -> 502 (upstream)
+    """
+    if error_type in ('empty_question', 'empty_repository'):
+        return 400
+    if error_type == 'invalid_project':
+        return 404
+    if error_type == 'repository_not_available':
+        return 503
+    return 502
+
 
 def add_project_form(request):
     """View to receive the Add Project form data without processing."""

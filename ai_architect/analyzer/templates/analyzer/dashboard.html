@@ -253,6 +253,10 @@
         <span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
         </button>
         <div class="hidden absolute right-0 top-full mt-1 z-20 min-w-[150px] bg-surface-card border border-outline-variant rounded-xl shadow-lg py-1 project-menu">
+        <a href="{% url 'analyzer:chat_interface' project.id %}" class="w-full text-left px-md py-2 text-label-md text-on-surface-variant hover:bg-surface-container transition-colors flex items-center gap-sm">
+        <span class="material-symbols-outlined text-[18px]">forum</span>
+                            Chat
+                        </a>
         <form method="post" action="{% url 'analyzer:delete_project' project.id %}" onsubmit="return confirm('Delete project &quot;{{ project.name }}&quot; and all its analysis data? This cannot be undone.');">
         {% csrf_token %}
         <button type="submit" class="w-full text-left px-md py-2 text-label-md text-status-error hover:bg-status-error/10 transition-colors flex items-center gap-sm">

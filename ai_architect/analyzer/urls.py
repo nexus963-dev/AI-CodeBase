@@ -64,8 +64,10 @@ urlpatterns = [
     # Project routes
     path('analyze/<int:project_id>/', views.analyze_project, name='analyze_project'),
     path('analyze/<int:project_id>/status/', views.analyze_project_status, name='analyze_project_status'),
-    path('chat/<int:project_id>/', views.chat_interface, name='chat_interface'),
+    path('projects/<int:project_id>/chat/', views.chat_interface, name='chat_interface'),
     path('project/<int:project_id>/delete/', views.delete_project, name='delete_project'),
+    # Secure JSON API: authenticated user asks a question about their OWN repo.
+    path('api/projects/<int:project_id>/ask/', views.project_ask, name='project_ask'),
     # Progress update endpoint (for AJAX calls from analysis script)
     path('update-analysis-progress/', views.update_analysis_progress, name='update_analysis_progress'),
 
