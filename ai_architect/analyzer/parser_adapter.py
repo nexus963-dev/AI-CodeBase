@@ -190,7 +190,8 @@ def get_relationships_for_project(project_id):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                'SELECT r.id, f.path AS file_path, r.line_number, '
+                'SELECT r.id, r.caller_id, r.callee_id, '
+                '       f.path AS file_path, r.line_number, '
                 '       caller.name AS caller_name, '
                 '       callee.name AS callee_name '
                 'FROM relationships r '

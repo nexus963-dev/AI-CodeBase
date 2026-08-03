@@ -24,10 +24,11 @@ import time
 # Import your models
 from .models import Project, AnalysisJob
 
-# Lightweight adapter that links the parser's (global) PostgreSQL output to
-# this app's Project / AnalysisJob / User records. It is the ONLY integration
-# point with the parser output; the parser itself is never modified.
-from . import parser_adapter
+# knowledge_base is the ONLY interface to parser data. It links the parser's
+# (global) PostgreSQL output to this app's Project / AnalysisJob / User
+# records (write path) and exposes all project-scoped reads; nothing here
+# ever touches parser tables or SQL directly.
+from . import knowledge_base
 
 logger = logging.getLogger(__name__)
 
@@ -355,7 +356,7 @@ def run_repository_analysis(analysis_job_id):
     modified here. It connects to PostgreSQL itself (via its own DB_CONFIG /
     DB_* env vars) and stores its output there; this worker only waits for it,
     records the outcome, and then links that output to this project/job via
-    parser_adapter (so Django can later retrieve only this project's data).
+    knowledge_base (so Django can later retrieve only this project's data).
 
     This is the ONLY seam that changes when a real worker replaces the
     thread. To migrate to Celery/RQ later:
@@ -466,7 +467,7 @@ def run_repository_analysis(analysis_job_id):
         # clone directory with this project and job before serving it back.
         logger.info("Parser execution completed (job id=%s)", analysis_job_id)
         try:
-            linked = parser_adapter.link_project_output(
+            linked = knowledge_base.link_project_output(
                 project.id, analysis_job_id, clone_dir,
             )
         except Exception as e:
