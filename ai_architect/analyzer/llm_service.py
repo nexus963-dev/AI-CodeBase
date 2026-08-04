@@ -19,6 +19,10 @@ Design notes for adding another provider (OpenAI / Anthropic / Ollama) later:
 
 The API key is read from the environment (``GEMINI_API_KEY``) — never
 hardcoded. There is no embeddings, no vector search, and no chat UI here.
+
+Formatting rule used everywhere below: responses cite repository-relative
+paths (``backend/app/database.py``), never the local filesystem path that the
+parser stores (``.../media/repos/<id>/backend/app/database.py``).
 """
 
 import os
@@ -26,6 +30,7 @@ import os
 from decouple import config
 
 from . import context_builder
+from . import source_retriever
 from .models import Project
 
 # Provider selection + model naming, all overridable via environment.
@@ -54,14 +59,43 @@ def _render_section(title, items, line_fn):
     return f"## {title}\n" + "\n".join(f"- {l}" for l in lines) + "\n"
 
 
-def _render_entities_by_file(title, items, line_fn):
-    """Render entities grouped by their file, so lists read like a real
-    repository browser instead of a flat dump."""
+def _rel(context, path):
+    """Repository-relative path (absolute parser paths never reach the prompt)."""
+    return source_retriever.relative_path(context['project_id'], path)
+
+
+def _entity_line(context, entity):
+    """A clean display line for one entity.
+
+    The parser occasionally stores a garbled name/signature (a body fragment).
+    ``source_retriever.recover_name`` re-derives the identifier from the actual
+    definition line; when it differs from the stored name, the clean name is
+    shown instead (the stored signature is unreliable for those, so it is
+    dropped rather than echoing garbage).
+    """
+    stored = entity.get('name', '?')
+    recovered = source_retriever.recover_name(context['project_id'], entity)
+    if recovered and recovered != stored:
+        # Methods are stored as ClassName.method — keep the class prefix, but
+        # only when the stored value is genuinely that shape (a garbled body
+        # fragment like ``rrent_user.id)`` is not).
+        cls, dot, method = stored.partition('.')
+        if dot and cls.isidentifier() and method.isidentifier():
+            recovered = cls + '.' + recovered
+        return recovered
+    if entity.get('type') == 'class':
+        return f"{stored} ({entity.get('start_line', '?')}-{entity.get('end_line', '?')})"
+    return f"{stored}{entity.get('signature', '')}"
+
+
+def _render_entities_by_file(title, items, line_fn, context):
+    """Render entities grouped by their repository-relative file path, so lists
+    read like a real repository browser instead of a flat dump."""
     if not items:
         return ''
     by_file = {}
     for it in items:
-        by_file.setdefault(it.get('file_path', '?'), []).append(it)
+        by_file.setdefault(_rel(context, it.get('file_path', '?')), []).append(it)
     chunks = [f"## {title}"]
     for path, group in by_file.items():
         chunks.append(f"### {path}")
@@ -69,9 +103,31 @@ def _render_entities_by_file(title, items, line_fn):
     return "\n".join(chunks) + "\n"
 
 
+def _render_code_blocks(title, blocks, context):
+    """Render on-disk source snippets under repository-relative headers."""
+    if not blocks:
+        return ''
+    chunks = [title]
+    for block in blocks:
+        chunks.append(
+            f"### {_rel(context, block['path'])} "
+            f"(lines {block['start_line']}-{block['end_line']})\n"
+            f"```\n{block['snippet']}\n```"
+        )
+    return "\n".join(chunks) + "\n"
+
+
 def build_prompt(context, question):
-    """Turn a structured repository context + question into a prompt string."""
+    """Turn a structured repository context + question into a prompt string.
+
+    Sections are intent-aware: a repository summary gets prose material
+    (README, structure, entry points, config) instead of a flat file dump; a
+    listing question gets the full per-file list; a "what database" question
+    gets the actual configuration files; a feature question gets the matched
+    source plus its callers/callees.
+    """
     s = context['summary']
+    intent = context.get('intent')
 
     parts = []
     parts.append(
@@ -84,41 +140,80 @@ def build_prompt(context, question):
         f"{s['relationships']} relationships."
     )
 
-    parts.append(_render_section(
-        'Files', context['files'],
-        lambda f: f['path'],
-    ))
-    parts.append(_render_entities_by_file(
-        'Classes', context['classes'],
-        lambda c: f"{c['name']} ({c.get('start_line', '?')}-{c.get('end_line', '?')})",
-    ))
-    parts.append(_render_entities_by_file(
-        'Functions', context['functions'],
-        lambda f: f"{f['name']}{f.get('signature', '')}",
-    ))
-    parts.append(_render_entities_by_file(
-        'Methods', context['methods'],
-        lambda m: f"{m['name']}{m.get('signature', '')}",
-    ))
-    parts.append(_render_section(
-        'Relationships', context['relationships'],
-        lambda r: f"{r.get('caller_name','?')} -> {r.get('callee_name','?')} at {r.get('file_path','?')}:{r.get('line_number','?')}",
-    ))
-
-    # Real source code read on demand from the cloned repository.
-    if context.get('readme'):
-        parts.append(
-            f"## Repository README (first {len(context['readme']['snippet'].splitlines())} lines)\n"
-            + context['readme']['snippet']
-        )
-
-    if context.get('code'):
-        parts.append("## Relevant Source Code (read from the repository)")
-        for block in context['code']:
+    # ---- Intent-specific body ----------------------------------------------
+    if intent in ('repo_summary', 'architecture'):
+        if context.get('readme'):
             parts.append(
-                f"### {block['path']} (lines {block['start_line']}-{block['end_line']})\n"
-                f"```\n{block['snippet']}\n```"
+                f"## Repository README (first "
+                f"{len(context['readme']['snippet'].splitlines())} lines)\n"
+                + context['readme']['snippet']
             )
+        if context.get('structure'):
+            parts.append("## Project Structure (repository-relative)\n"
+                         + context['structure'])
+        if context.get('entry_points'):
+            parts.append(_render_code_blocks(
+                "## Main Entry Points", context['entry_points'], context))
+        if context.get('config') and intent == 'architecture':
+            parts.append(_render_code_blocks(
+                "## Configuration / Dependencies", context['config'], context))
+
+    elif intent == 'technology':
+        # The actual config files decide the stack — never metadata guesses.
+        if context.get('config'):
+            parts.append(_render_code_blocks(
+                "## Configuration Files (the source of truth for the stack)",
+                context['config'], context))
+        if context.get('readme'):
+            parts.append(
+                f"## Repository README (first "
+                f"{len(context['readme']['snippet'].splitlines())} lines)\n"
+                + context['readme']['snippet']
+            )
+
+    elif intent == 'list_functions':
+        parts.append(_render_entities_by_file(
+            'Functions (complete list, grouped by file)', context['functions'],
+            lambda f: _entity_line(context, f), context))
+        if context.get('methods'):
+            parts.append(_render_entities_by_file(
+                'Methods', context['methods'],
+                lambda m: _entity_line(context, m), context))
+
+    elif intent == 'list_classes':
+        parts.append(_render_entities_by_file(
+            'Classes (complete list, grouped by file)', context['classes'],
+            lambda c: _entity_line(context, c), context))
+        if context.get('methods'):
+            parts.append(_render_entities_by_file(
+                'Methods', context['methods'],
+                lambda m: _entity_line(context, m), context))
+
+    elif intent == 'list_files':
+        if context.get('structure'):
+            parts.append("## Repository Tree (repository-relative paths)\n"
+                         + context['structure'])
+        parts.append(_render_entities_by_file(
+            'All files', context['files'],
+            lambda f: _rel(context, f['path']), context))
+
+    else:  # feature / general — matched source plus the call graph around it.
+        if context.get('code'):
+            parts.append(_render_code_blocks(
+                "## Relevant Source Code (read from the repository)",
+                context['code'], context))
+        if context.get('call_edges'):
+            chunks = ["## Call Graph Around The Matched Code"]
+            for edge in context['call_edges']:
+                chunks.append(
+                    f"- {edge.get('caller_name', '?')} -> "
+                    f"{edge.get('callee_name', '?')} "
+                    f"({_rel(context, edge['file_path'])}:{edge.get('line_number', '?')})")
+            parts.append("\n".join(chunks))
+        if context.get('related'):
+            parts.append(_render_code_blocks(
+                "## Related Functions (callers/callees read from the repository)",
+                context['related'], context))
 
     # Honest truncation note so the model never mistakes a sample for the whole.
     if context.get('truncated'):
@@ -130,8 +225,9 @@ def build_prompt(context, question):
     parts.append(
         "Use ONLY the information above. If the answer is not in this "
         "context, say so rather than guessing. Do not invent code or files "
-        "not listed here. When source code is included, quote it accurately "
-        "and cite the file path.\n"
+        "not listed here. Always cite repository-relative paths "
+        "(e.g. backend/app/database.py), never absolute filesystem paths. "
+        "When source code is included, quote it accurately.\n"
     )
     parts.append("User question:")
     parts.append(context['question'])
@@ -140,15 +236,15 @@ def build_prompt(context, question):
 
 
 def _sources_from_context(context):
-    """Collect the file paths referenced by the context (de-duplicated)."""
+    """Collect the repository-relative file paths referenced by the context."""
     sources = set()
     for f in context['files']:
-        sources.add(f.get('path'))
+        sources.add(_rel(context, f.get('path')))
     for group in ('classes', 'functions', 'methods'):
         for e in context[group]:
-            sources.add(e.get('file_path'))
+            sources.add(_rel(context, e.get('file_path')))
     for r in context['relationships']:
-        sources.add(r.get('file_path'))
+        sources.add(_rel(context, r.get('file_path')))
     return sorted(x for x in sources if x)
 
 
@@ -266,7 +362,19 @@ def answer_repository_question(project_id, question, provider=None, model=None):
     prompt = build_prompt(context, question)
     system_prompt = (
         "You are a software architect assistant. Answer from the repository "
-        "context given, cite file names, and never invent details."
+        "context given and never invent details.\n"
+        "Formatting rules:\n"
+        "- Use repository-relative paths only (e.g. backend/app/database.py). "
+        "Never show absolute filesystem paths like /home/... or media/repos/...\n"
+        "- When listing functions, classes or methods, group them by file and "
+        "list every one shown in the context; if the context is truncated, say "
+        "so and give the totals from the summary.\n"
+        "- For 'summarize' or 'architecture' questions, write a prose technical "
+        "overview of how the system is organized and how the pieces connect. "
+        "Do not answer with a bare list of file names.\n"
+        "- When a question asks what database or framework a project uses, "
+        "decide from the configuration/source shown (create_engine, "
+        "settings.DATABASE_URL, requirements.txt, ...), never from assumptions."
     )
 
     try:

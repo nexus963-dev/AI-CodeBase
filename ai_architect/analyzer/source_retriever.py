@@ -20,6 +20,7 @@ Guarantees
   PostgreSQL; the database index is untouched.
 """
 
+import re
 from pathlib import Path
 
 from django.conf import settings
@@ -101,6 +102,56 @@ def _read_range(project_id, stored_path, start_line, end_line, max_chars, max_li
         'snippet': snippet,
         'truncated': truncated,
     }
+
+
+def relative_path(project_id, stored_path):
+    """Convert a stored absolute path to the repository-relative form.
+
+    Parser rows store absolute clone paths (``.../media/repos/<pid>/backend/
+    app/database.py``). Responses must cite the repository-relative form
+    (``backend/app/database.py``) and never leak local filesystem paths. The
+    absolute path is returned unchanged when it cannot be mapped (defensive;
+    callers render it only when nothing better exists).
+    """
+    try:
+        candidate = Path(stored_path).resolve()
+        root = project_root(project_id)
+        if candidate.is_relative_to(root):
+            return candidate.relative_to(root).as_posix()
+    except (ValueError, OSError):
+        pass
+    return stored_path
+
+
+# Definition-line patterns used to recover a reliable identifier when the
+# parser stored a garbled name (a body fragment instead of ``def <name>``).
+_DEF_NAME_RE = re.compile(r'\b(?:async\s+)?def\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(')
+_CLASS_NAME_RE = re.compile(r'\bclass\s+([A-Za-z_][A-Za-z0-9_]*)\s*[:(]')
+
+
+def recover_name(project_id, entity):
+    """Recover a reliable identifier for an entity from its definition line.
+
+    The parser sometimes stores a garbled ``name`` for files with heavy
+    decorators (e.g. ``'no valid Clerk'`` instead of ``get_current_user``).
+    The source is the source of truth: the definition line at ``start_line``
+    always holds ``def <name>`` / ``class <name>``. Returns ``None`` when
+    nothing plausible is found so the caller can fall back to the stored name.
+    """
+    block = _read_range(
+        project_id,
+        entity['file_path'],
+        (entity.get('start_line') or 1) - 1,
+        (entity.get('start_line') or 1) + 2,
+        DEFAULT_MAX_SNIPPET_CHARS,
+        4,
+    )
+    if block is None:
+        return None
+    pattern = (_CLASS_NAME_RE if entity.get('type') == 'class'
+               else _DEF_NAME_RE)
+    match = pattern.search(block['snippet'])
+    return match.group(1) if match else None
 
 
 def read_entity(project_id, entity, max_chars=DEFAULT_MAX_SNIPPET_CHARS, max_lines=DEFAULT_MAX_SNIPPET_LINES):

@@ -110,6 +110,48 @@ def get_project_relationships(project_id):
     return parser_adapter.get_relationships_for_project(project_id)
 
 
+def get_project_call_edges(project_id):
+    """Same-file caller -> callee edges resolved on demand from call sites.
+
+    The parser persists only a subset of its staged call sites to
+    ``relationships``; the staging table itself is never cleared. This returns
+    the resolved edges for this project (same shape as ``relationships``),
+    reconstructed from the parser's own staged data. It is read-only — nothing
+    is written back to the parser output. Falls back to ``relationships`` rows
+    for projects where the parser already resolved edges.
+    """
+    existing = parser_adapter.get_relationships_for_project(project_id)
+    if existing:
+        return existing
+
+    sites = parser_adapter.get_call_sites_for_project(project_id)
+    if not sites:
+        return []
+
+    # Index entities by (file_path, name) so a staged called_name can be
+    # matched to a callee in the same file — mirroring the parser's own
+    # same-file resolution, but without mutating the database.
+    by_key = {}
+    for e in _entities_for_project(project_id):
+        by_key.setdefault((e['file_path'], e['name']), []).append(e)
+
+    edges = []
+    for site in sites:
+        callees = by_key.get((site['file_path'], site['called_name']), [])
+        callee = next((c for c in callees if c['id'] != site['caller_id']), None)
+        if callee is None:
+            continue
+        edges.append({
+            'caller_id': site['caller_id'],
+            'callee_id': callee['id'],
+            'caller_name': site['caller_name'],
+            'callee_name': callee['name'],
+            'file_path': site['file_path'],
+            'line_number': site['line_number'],
+        })
+    return edges
+
+
 def get_project_summary(project_id):
     """Compact summary of a project's parsed knowledge.
 

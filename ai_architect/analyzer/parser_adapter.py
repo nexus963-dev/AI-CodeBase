@@ -184,6 +184,35 @@ def get_entities_for_project(project_id):
         conn.close()
 
 
+def get_call_sites_for_project(project_id):
+    """Raw call sites scoped to a project, caller name resolved.
+
+    The parser stages every call site it sees in ``call_sites_staging`` and
+    only a subset ever becomes a ``relationships`` row (same-file exact-name
+    resolution, plus staging is never cleared). This scoped read gives the
+    full, project-owned set so the retrieval layer can resolve callees on
+    demand. Read-only; nothing here modifies parser output.
+    """
+    conn = _connect()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                'SELECT css.caller_id, caller.name AS caller_name, '
+                '       css.called_name, f.path AS file_path, '
+                '       css.line_number '
+                'FROM call_sites_staging css '
+                'JOIN files f ON css.file_id = f.id '
+                'JOIN code_entities caller ON css.caller_id = caller.id '
+                'WHERE f.project_id=%s '
+                'ORDER BY f.path, css.line_number',
+                (project_id,),
+            )
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+    finally:
+        conn.close()
+
+
 def get_relationships_for_project(project_id):
     """All relationships (caller -> callee) parsed for this project."""
     conn = _connect()
