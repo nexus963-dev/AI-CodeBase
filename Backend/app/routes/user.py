@@ -14,6 +14,7 @@ from app.services.repository_reader import read_repository
 from app.services.chunking_service import create_chunks
 from app.services.embedding_service import generate_embeddings
 from app.services.vector_database import get_or_create_repository_collection, store_repository_embeddings
+from app.services.repository_manifest import build_repository_manifest
 
 router = APIRouter()
 
@@ -102,6 +103,8 @@ def analyze_repository(repository: RepositoryRequest):
     repository_data = read_repository(
         repo_path
     )
+
+    build_repository_manifest(repo_path)
 
     chunk_data = create_chunks(
         repository_data

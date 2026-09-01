@@ -2,10 +2,14 @@ from app.services.vector_database import get_repository_collection
 from app.services.retrieval_service import retrieve_relevant_chunks
 from app.services.prompt_builder import build_prompt
 from app.services.gemini_service import generate_repository_answer
+from app.config.settings import settings
+from app.services.repository_manifest import load_repository_manifest
+from pathlib import Path
 
 def chat_with_repository(
     repository_name: str,
-    question: str
+    question: str,
+    conversation_history: str = ""
 ):
 
     try:
@@ -16,7 +20,11 @@ def chat_with_repository(
         # Step 2
         retrieval_results = retrieve_relevant_chunks(
             collection=collection,
-            question=question
+            question=question,
+            top_k=min(collection.count(), 30) if any(
+                term in question.lower()
+                for term in ("architecture", "all functions", "every function", "methodology", "structure")
+            ) else 5,
         )
 
         # Step 3
@@ -26,7 +34,9 @@ def chat_with_repository(
         # Step 4
         prompt = build_prompt(
             question=question,
-            retrieval_results=retrieval_results
+            retrieval_results=retrieval_results,
+            manifest=load_repository_manifest(Path(settings.REPOSITORIES_PATH) / repository_name),
+            conversation_history=conversation_history,
         )
 
         # Step 5

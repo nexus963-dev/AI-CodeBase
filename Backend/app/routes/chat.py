@@ -89,9 +89,22 @@ def chat(
 
     try:
 
+        previous_messages = (
+            db.query(ChatMessage)
+            .filter(ChatMessage.session_id == session.id)
+            .order_by(ChatMessage.created_at.asc())
+            .limit(12)
+            .all()
+        )
+        conversation_history = "\n".join(
+            f"{message.role}: {message.content}"
+            for message in previous_messages
+        )
+
         answer = chat_with_repository(
             repository_name=request.repository_name,
-            question=request.question
+            question=request.question,
+            conversation_history=conversation_history,
         )
 
     except Exception as e:

@@ -16,7 +16,10 @@ from app.config.settings import settings
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Escape percent signs for ConfigParser interpolation so PostgreSQL URLs with
+# percent-encoded credentials (e.g. password characters like %23, %40, %21)
+# are accepted by Alembic when running migrations.
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

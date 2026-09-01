@@ -1,6 +1,7 @@
 from git import Repo
 from pathlib import Path
 import re
+import subprocess
 
 from app.config.settings import settings
 
@@ -48,10 +49,21 @@ def clone_repository(repo_url: str):
             f"Cloning repository '{repo_name}'..."
         )
 
-        Repo.clone_from(
+        git_cmd = [
+            "git",
+            "-c",
+            "core.longpaths=true",
+            "clone",
+            "--depth=1",
             repo_url,
-            repo_path,
-            depth=1
+            str(repo_path),
+        ]
+
+        subprocess.run(
+            git_cmd,
+            check=True,
+            capture_output=True,
+            text=True,
         )
 
         print(
