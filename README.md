@@ -454,7 +454,3 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ## Author / Project
 
 **Repix — AI GitHub Repository Assistant**
-
-Repository:
-
-https://github.com/Akshitagupta299/AI-GitHub-Repository-Assistant
