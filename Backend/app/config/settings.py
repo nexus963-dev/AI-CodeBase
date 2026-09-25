@@ -7,6 +7,10 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     GEMINI_API_KEY: str
 
+    # Optional: NVIDIA NIM free tier (build.nvidia.com).
+    # When set, NVIDIA is used as the primary LLM provider.
+    NVIDIA_API_KEY: str = ""
+
     FRONTEND_URL: str = "http://localhost:5173"
 
     CHROMA_DB_PATH: str = "chroma_db"

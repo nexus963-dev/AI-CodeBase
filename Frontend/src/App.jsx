@@ -177,6 +177,20 @@ function App() {
 
 
   /*
+   * Open the chat directly from the Navbar
+   * (resume a previously analyzed repository).
+   */
+
+  const handleOpenChat = () => {
+
+    if (repositoryName) {
+      setShowChat(true);
+    }
+
+  };
+
+
+  /*
    * HOME PAGE
    */
 
@@ -184,7 +198,10 @@ function App() {
     <>
       <AuroraBackground />
 
-      <Navbar />
+      <Navbar
+        hasRepository={Boolean(repositoryName)}
+        onOpenChat={handleOpenChat}
+      />
 
       <Hero />
 

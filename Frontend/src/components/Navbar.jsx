@@ -1,6 +1,7 @@
 import { FaGithub } from "react-icons/fa";
+import { FiMessageSquare } from "react-icons/fi";
 
-function Navbar() {
+function Navbar({ hasRepository = false, onOpenChat }) {
   return (
     <header className="navbar-wrapper">
 
@@ -38,6 +39,19 @@ function Navbar() {
 
         </ul>
 
+      <div className="nav-actions">
+
+        {hasRepository && (
+          <button
+            className="nav-chats-btn"
+            onClick={onOpenChat}
+            title="Resume your repository chat"
+          >
+            <FiMessageSquare />
+            My Chats
+          </button>
+        )}
+
       <button
         className="nav-btn"
         onClick={() => {
@@ -51,6 +65,8 @@ function Navbar() {
       >
         Start Exploring →
       </button>
+
+      </div>
 
       </nav>
 

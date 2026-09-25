@@ -7,6 +7,7 @@ from app.models.chat_message import ChatMessage
 
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services.orchestrator_service import chat_with_repository
+from app.services.chat_history import load_conversation_history
 
 
 router = APIRouter()
@@ -89,16 +90,10 @@ def chat(
 
     try:
 
-        previous_messages = (
-            db.query(ChatMessage)
-            .filter(ChatMessage.session_id == session.id)
-            .order_by(ChatMessage.created_at.asc())
-            .limit(12)
-            .all()
-        )
-        conversation_history = "\n".join(
-            f"{message.role}: {message.content}"
-            for message in previous_messages
+        # Latest 12 messages, oldest first
+        conversation_history = load_conversation_history(
+            db,
+            session.id,
         )
 
         answer = chat_with_repository(

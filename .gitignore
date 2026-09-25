@@ -29,3 +29,9 @@ repositories/
 
 # ChromaDB
 chroma_db/
+
+# Local documentation (not for GitHub)
+DOCUMENTATION_INDEX.md
+PRESENTATION_GUIDE.md
+ROLE_*.md
+*.pptx
