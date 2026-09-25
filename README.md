@@ -10,7 +10,6 @@ Instead of manually opening files and searching through a codebase, a user provi
 
 The retrieved repository context is passed through the application's AI answering pipeline so that responses are grounded in the analyzed codebase.
 
-The project also includes persistent chat sessions and messages backed by PostgreSQL.
 
 ## Problem Statement
 
