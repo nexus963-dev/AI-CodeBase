@@ -91,36 +91,198 @@ function ChatWindow({
     setIsLoading(true);
 
 
+    /*
+     * Streaming state lives outside try so the
+     * catch block can keep a partial answer.
+     */
+
+    let assistantContent = "";
+
+    let assistantStarted = false;
+
+    let returnedSessionId = null;
+
+
+    const updateStreamingMessage = (content) => {
+
+      setMessages((previousMessages) => {
+
+        const updatedMessages = [...previousMessages];
+
+        for (
+          let index = updatedMessages.length - 1;
+          index >= 0;
+          index -= 1
+        ) {
+
+          if (updatedMessages[index].streaming) {
+
+            updatedMessages[index] = {
+              ...updatedMessages[index],
+              content,
+            };
+
+            break;
+
+          }
+
+        }
+
+        return updatedMessages;
+
+      });
+
+    };
+
+
+    const appendToken = (text) => {
+
+      assistantContent += text;
+
+      if (!assistantStarted) {
+
+        assistantStarted = true;
+
+        setMessages((previousMessages) => [
+
+          ...previousMessages,
+
+          {
+            role: "assistant",
+            content: assistantContent,
+            streaming: true,
+          },
+
+        ]);
+
+      } else {
+
+        updateStreamingMessage(assistantContent);
+
+      }
+
+    };
+
+
     try {
 
-      const response = await axios.post(
+      const response = await fetch(
         `${API_URL}/chat`,
         {
-          repository_name: repositoryName,
-          question: message,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            repository_name: repositoryName,
+            question: message,
 
-          /*
-           * Send session_id only when
-           * continuing an existing chat.
-           */
+            /*
+             * Send session_id only when
+             * continuing an existing chat.
+             */
 
-          ...(sessionId && {
-            session_id: sessionId,
+            ...(sessionId && {
+              session_id: sessionId,
+            }),
+
           }),
-
         }
       );
 
 
-      const answer = response.data.answer;
+      if (!response.ok || !response.body) {
 
-      const returnedSessionId =
-        response.data.session_id;
+        throw new Error(
+          `Chat API error: HTTP ${response.status}`
+        );
+
+      }
+
+
+      const reader = response.body.getReader();
+
+      const decoder = new TextDecoder();
+
+      let buffer = "";
 
 
       /*
-       * If this was a new chat,
-       * the backend created a session.
+       * NDJSON events arrive as:
+       * meta -> token* -> done | error
+       */
+
+      while (true) {
+
+        const { done, value } =
+          await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        buffer += decoder.decode(value, {
+          stream: true,
+        });
+
+        const lines = buffer.split("\n");
+
+        buffer = lines.pop();
+
+
+        for (const line of lines) {
+
+          if (!line.trim()) {
+            continue;
+          }
+
+          const event = JSON.parse(line);
+
+          if (event.type === "meta") {
+
+            returnedSessionId = event.session_id;
+
+          } else if (event.type === "token") {
+
+            appendToken(event.text);
+
+          } else if (event.type === "error") {
+
+            throw new Error(
+              event.detail || "Stream failed"
+            );
+
+          }
+
+        }
+
+      }
+
+
+      /*
+       * Clear streaming flags so future
+       * updates ignore this message.
+       */
+
+      if (assistantStarted) {
+
+        setMessages((previousMessages) =>
+          previousMessages.map((streamedMessage) =>
+            streamedMessage.streaming
+              ? { ...streamedMessage, streaming: false }
+              : streamedMessage
+          )
+        );
+
+      }
+
+
+      /*
+       * Register a brand new session only after
+       * "done" - the backend has saved the answer
+       * by then. Firing this mid-stream would
+       * switch the session and reload messages,
+       * wiping the tokens being rendered.
        */
 
       if (
@@ -134,63 +296,6 @@ function ChatWindow({
 
       }
 
-
-      /*
-       * Create empty assistant message.
-       */
-
-      const assistantMessage = {
-
-        role: "assistant",
-
-        content: "",
-
-      };
-
-
-      setMessages((previousMessages) => [
-
-        ...previousMessages,
-
-        assistantMessage,
-
-      ]);
-
-
-      /*
-       * Typing animation.
-       */
-
-      let currentText = "";
-
-      for (let i = 0; i < answer.length; i += 10) {
-
-        currentText += answer.slice(i, i + 10);
-
-        setMessages((previousMessages) => {
-
-          const updatedMessages = [...previousMessages];
-
-          const lastMessageIndex =
-            updatedMessages.length - 1;
-
-          if (
-            updatedMessages[lastMessageIndex]?.role === "assistant"
-          ) {
-            updatedMessages[lastMessageIndex] = {
-              ...updatedMessages[lastMessageIndex],
-              content: currentText,
-            };
-          }
-
-          return updatedMessages;
-        });
-
-        await new Promise(
-          (resolve) => setTimeout(resolve, 10)
-        );
-      }
-
     } catch (error) {
 
       console.error(
@@ -199,25 +304,35 @@ function ChatWindow({
       );
 
 
-      const errorMessage = {
+      if (assistantStarted) {
 
-        role: "assistant",
+        /*
+         * Keep the partial answer and note
+         * that it was cut off.
+         */
 
-        content:
-          "Sorry, I couldn't process your request. Please make sure the backend is running and the repository has been indexed.",
+        updateStreamingMessage(
+          assistantContent
+          + "\n\n**[Response interrupted]**"
+        );
 
-      };
+      } else {
 
+        setMessages(
+          (previousMessages) => [
 
-      setMessages(
-        (previousMessages) => [
+            ...previousMessages,
 
-          ...previousMessages,
+            {
+              role: "assistant",
+              content:
+                "Sorry, I couldn't process your request. Please make sure the backend is running and the repository has been indexed.",
+            },
 
-          errorMessage,
+          ]
+        );
 
-        ]
-      );
+      }
 
     } finally {
 

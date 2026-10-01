@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config.settings import settings
 from app.routes.user import router as user_router
 from app.routes.chat import router as chat_router
+from app.routes.files import router as files_router
 from app.routes.health import router as health_router
 from app.database import Base, engine
 from app.models.user import User # register the model with Base so that the table is created in the database
@@ -29,6 +30,7 @@ app.add_middleware(
 
 app.include_router(user_router)
 app.include_router(chat_router)
+app.include_router(files_router)
 app.include_router(health_router)
 
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import Sidebar from "./Sidebar";
 import ChatWindow from "./ChatWindow";
+import FilePanel from "./FilePanel";
 
 
 function ChatLayout({
@@ -15,6 +16,8 @@ function ChatLayout({
   const [activeSessionId, setActiveSessionId] = useState(null);
 
   const [sessionsRefreshKey, setSessionsRefreshKey] = useState(0);
+
+  const [showFiles, setShowFiles] = useState(false);
 
 
   const handleSessionCreated = (sessionId) => {
@@ -48,6 +51,7 @@ function ChatLayout({
         activeSessionId={activeSessionId}
         onSelectSession={setActiveSessionId}
         onNewChat={handleNewChat}
+        onOpenFiles={() => setShowFiles(true)}
         refreshKey={sessionsRefreshKey}
       />
 
@@ -56,6 +60,13 @@ function ChatLayout({
         sessionId={activeSessionId}
         onSessionCreated={handleSessionCreated}
       />
+
+      {showFiles && (
+        <FilePanel
+          repositoryName={repositoryName}
+          onClose={() => setShowFiles(false)}
+        />
+      )}
 
     </div>
 

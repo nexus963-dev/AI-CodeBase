@@ -247,6 +247,12 @@ const response = await fetch(
       const license =
         data.license;
 
+      const repositoryUrl =
+        data.repository_url;
+
+      const fileCount =
+        data.file_count;
+
 
       /*
        * Save metadata
@@ -277,6 +283,16 @@ const response = await fetch(
         license
       );
 
+      localStorage.setItem(
+        "repositoryUrl",
+        repositoryUrl
+      );
+
+      localStorage.setItem(
+        "repositoryFileCount",
+        fileCount
+      );
+
 
       /*
        * Store analysis data.
@@ -298,6 +314,10 @@ const response = await fetch(
         branch,
 
         license,
+
+        repositoryUrl,
+
+        fileCount,
 
       });
 

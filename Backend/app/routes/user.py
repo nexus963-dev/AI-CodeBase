@@ -9,7 +9,7 @@ from app.security import hash_password,verify_password
 from app.auth import create_access_token, get_current_user
 
 from app.schemas.repository import RepositoryRequest
-from app.services.github_service import (clone_repository,get_repository_metadata,)
+from app.services.github_service import (clone_repository,get_repository_identity,get_repository_metadata,)
 from app.services.repository_reader import read_repository
 from app.services.chunking_service import create_chunks
 from app.services.embedding_service import generate_embeddings
@@ -104,7 +104,7 @@ def analyze_repository(repository: RepositoryRequest):
         repo_path
     )
 
-    build_repository_manifest(repo_path)
+    manifest = build_repository_manifest(repo_path)
 
     chunk_data = create_chunks(
         repository_data
@@ -127,6 +127,10 @@ def analyze_repository(repository: RepositoryRequest):
     metadata = get_repository_metadata(
         repo_path
     )
+
+    identity = get_repository_identity(
+        repo_path
+    )
     return {
 
         "repository_name": repo_path.name,
@@ -138,5 +142,9 @@ def analyze_repository(repository: RepositoryRequest):
         "branch": metadata["branch"],
 
         "license": metadata["license"],
+
+        "repository_url": identity["repository_url"],
+
+        "file_count": manifest["file_count"],
 
     }

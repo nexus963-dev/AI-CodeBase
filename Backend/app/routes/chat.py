@@ -1,24 +1,57 @@
+import json
+
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 
-from app.database import get_db
+from app.database import get_db, SessionLocal
 from app.models.chat_session import ChatSession
 from app.models.chat_message import ChatMessage
 
-from app.schemas.chat import ChatRequest, ChatResponse
-from app.services.orchestrator_service import chat_with_repository
+from app.schemas.chat import ChatRequest
+from app.services.orchestrator_service import chat_with_repository_stream
 from app.services.chat_history import load_conversation_history
 
 
 router = APIRouter()
 
 
+def _event(payload: dict) -> str:
+    """One NDJSON line for the streaming response."""
+    return json.dumps(payload, ensure_ascii=False) + "\n"
+
+
+def _save_assistant_message(session_id: int, content: str) -> None:
+    """
+    Save the assistant answer with its own DB session.
+
+    Runs inside the streaming generator, after the request-scoped
+    session may already have been closed.
+    """
+    db = SessionLocal()
+    try:
+        db.add(ChatMessage(
+            session_id=session_id,
+            role="assistant",
+            content=content,
+        ))
+        db.commit()
+    finally:
+        db.close()
+
+
 # ==========================================================
 # POST /chat
-# Create a new chat or continue an existing chat
+# Create a new chat or continue an existing chat.
+#
+# Streams NDJSON events:
+#   {"type": "meta",  "session_id": 12}   first, before tokens
+#   {"type": "token", "text": "..."}      repeated, one per chunk
+#   {"type": "done"}                      answer finished + saved
+#   {"type": "error", "detail": "..."}    generation failed
 # ==========================================================
 
-@router.post("/chat", response_model=ChatResponse)
+@router.post("/chat")
 def chat(
     request: ChatRequest,
     db: Session = Depends(get_db)
@@ -85,7 +118,7 @@ def chat(
     db.commit()
 
     # --------------------------------------------------
-    # 4. Generate AI answer
+    # 4. Generate AI answer (streamed token by token)
     # --------------------------------------------------
 
     try:
@@ -96,44 +129,72 @@ def chat(
             session.id,
         )
 
-        answer = chat_with_repository(
-            repository_name=request.repository_name,
-            question=request.question,
-            conversation_history=conversation_history,
-        )
-
     except Exception as e:
 
         db.rollback()
 
         raise HTTPException(
             status_code=500,
-            detail=f"Failed to generate answer: {str(e)}"
+            detail=f"Failed to load chat history: {str(e)}"
         )
 
-    # --------------------------------------------------
-    # 5. Save assistant answer
-    # --------------------------------------------------
+    session_id = session.id
 
-    assistant_message = ChatMessage(
-        session_id=session.id,
-        role="assistant",
-        content=answer
-    )
+    def event_stream():
 
-    db.add(assistant_message)
+        accumulated = []
 
-    # Update session timestamp
-    db.commit()
-    db.refresh(session)
+        try:
 
-    # --------------------------------------------------
-    # 6. Return answer + session ID
-    # --------------------------------------------------
+            # Tell the client which session this stream belongs to
+            # before the first token arrives.
+            yield _event({
+                "type": "meta",
+                "session_id": session_id,
+            })
 
-    return ChatResponse(
-        answer=answer,
-        session_id=session.id
+            for token in chat_with_repository_stream(
+                repository_name=request.repository_name,
+                question=request.question,
+                conversation_history=conversation_history,
+            ):
+
+                accumulated.append(token)
+
+                yield _event({
+                    "type": "token",
+                    "text": token,
+                })
+
+            # --------------------------------------------------
+            # 5. Save assistant answer (partial answers too)
+            # --------------------------------------------------
+
+            if accumulated:
+                _save_assistant_message(
+                    session_id,
+                    "".join(accumulated),
+                )
+
+            yield _event({"type": "done"})
+
+        except Exception as e:
+
+            # Keep whatever tokens already reached the client.
+            if accumulated:
+                _save_assistant_message(
+                    session_id,
+                    "".join(accumulated),
+                )
+
+            yield _event({
+                "type": "error",
+                "detail": str(e),
+            })
+
+    return StreamingResponse(
+        event_stream(),
+        media_type="application/x-ndjson",
     )
 
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import {
+  FiFileText,
   FiFolder,
   FiLayers,
   FiGitBranch,
@@ -20,6 +21,7 @@ function Sidebar({
   activeSessionId,
   onSelectSession,
   onNewChat,
+  onOpenFiles,
   refreshKey,
 }) {
 
@@ -227,6 +229,19 @@ function Sidebar({
       {/* Bottom section */}
 
       <div>
+
+        <button
+          className="files-btn"
+          onClick={onOpenFiles}
+          title="Browse repository files"
+        >
+
+          <FiFileText />
+
+          Browse Files
+
+        </button>
+
 
         <button
           className="new-chat-btn"

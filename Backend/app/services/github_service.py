@@ -301,3 +301,81 @@ def get_repository_metadata(repo_path: Path):
         "license": license_name,
 
     }
+
+
+def get_repository_identity(repo_path: Path) -> dict:
+
+    """
+    Derive GitHub identity metadata from the local clone's remote.
+
+    Works on existing clones as well as fresh ones.
+
+    Returns:
+        {
+            "owner": "owner",
+            "repository_url": "https://github.com/owner/repo"
+        }
+
+        When the remote is missing, not a GitHub remote, or the
+        URL cannot be parsed, both values are None — analyzing
+        must never break because of this.
+    """
+
+    fallback = {"owner": None, "repository_url": None}
+
+    try:
+
+        repo = Repo(repo_path)
+
+        remote_url = repo.remotes[0].url
+
+        if not remote_url:
+
+            return fallback
+
+        remote_url = remote_url.strip().rstrip("/")
+
+        if remote_url.endswith(".git"):
+
+            remote_url = remote_url[:-4]
+
+        remote_url = remote_url.rstrip("/")
+
+        # --------------------------------------------------
+        # Match the remote forms:
+        #
+        #   https://github.com/owner/repo
+        #   git@github.com:owner/repo
+        #   ssh://git@github.com/owner/repo
+        # --------------------------------------------------
+
+        match = re.match(
+            r"^(?:https?://|ssh://git@|git@)github\.com[/:](?P<path>.+)$",
+            remote_url,
+        )
+
+        if not match:
+
+            return fallback
+
+        parts = match.group("path").strip("/").split("/")
+
+        if len(parts) != 2 or not all(parts):
+
+            return fallback
+
+        owner, repo_name = parts
+
+        return {
+
+            "owner": owner,
+
+            "repository_url": (
+                f"https://github.com/{owner}/{repo_name}"
+            ),
+
+        }
+
+    except Exception:
+
+        return fallback
