@@ -11,6 +11,10 @@ class Settings(BaseSettings):
     # When set, NVIDIA is used as the primary LLM provider.
     NVIDIA_API_KEY: str = ""
 
+    # Optional: GitHub personal access token (read-only is enough).
+    # Raises the commit-history rate limit from 60 to 5000 req/h.
+    GITHUB_TOKEN: str = ""
+
     FRONTEND_URL: str = "http://localhost:5173"
 
     CHROMA_DB_PATH: str = "chroma_db"

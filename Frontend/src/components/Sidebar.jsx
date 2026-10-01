@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 import {
+  FiClock,
   FiFileText,
   FiFolder,
   FiLayers,
@@ -22,6 +23,7 @@ function Sidebar({
   onSelectSession,
   onNewChat,
   onOpenFiles,
+  onOpenHistory,
   refreshKey,
 }) {
 
@@ -239,6 +241,19 @@ function Sidebar({
           <FiFileText />
 
           Browse Files
+
+        </button>
+
+
+        <button
+          className="files-btn"
+          onClick={onOpenHistory}
+          title="How this project was built"
+        >
+
+          <FiClock />
+
+          Commit History
 
         </button>
 
